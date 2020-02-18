@@ -45,6 +45,7 @@ grails:
             json:
               - application/json
               - text/json
+            jsonp: application/javascript
             multipartForm: multipart/form-data
             pdf: application/pdf
             rss: application/rss+xml
@@ -55,6 +56,14 @@ grails:
             xml:
               - text/xml
               - application/xml
+            png: image/png
+            jpg: image/jpeg
+        file:
+            extensions: true
+        use:
+            accept:
+                header: false
+
     urlmapping:
         cache:
             maxsize: 1000
@@ -62,17 +71,41 @@ grails:
         defaultScope: singleton
     converters:
         encoding: UTF-8
+        json :
+            default:
+                deep: false
     views:
         default:
-            codec: html
+            codec: none
         gsp:
             encoding: UTF-8
             htmlcodec: xml
+            sitemesh :
+                preprocess : true
             codecs:
                 expression: html
                 scriptlets: html
                 taglib: none
                 staticparts: none
+    project:
+        groupId : appName
+    databinding:
+        convertEmptyStringsToNull: false
+
+    scaffolding:
+        templates:
+            domainSuffix: Instance
+    json:
+        legacy:
+            builder: false
+    enable:
+        native2ascii: true
+    logging:
+        jul:userbridge: true
+    spring:
+        bean:
+            packages: []
+
 endpoints:
     jmx:
         unique-names: true
@@ -123,3 +156,5 @@ environments:
                 testOnReturn: false
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+
+

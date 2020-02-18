@@ -54,11 +54,15 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
-    compile 'org.grails.plugins:spring-security-core:3.1.2'
+    //compile 'org.grails.plugins:rabbitmq-native:3.5.1'
+
+//    compile group: 'org.springframework.security', name: 'spring-security-core', version: '3.1.2.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-core', version: '4.2.14.RELEASE'
+
+    compile 'org.grails.plugins:spring-security-acl:3.1.1'
     compile 'org.grails.plugins:spring-security-appinfo:3.0.1'
     compile 'org.grails.plugins:spring-security-cas:3.0.1'
     compile 'org.grails.plugins:spring-security-ldap:3.0.2'
-    compile 'org.grails.plugins:spring-security-acl:3.1.1'
 
     compile "org.grails.plugins:export:2.0.0"
     compile 'org.grails.plugins:http-builder-helper:1.1.0'
