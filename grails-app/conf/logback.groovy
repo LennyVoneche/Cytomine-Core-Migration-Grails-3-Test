@@ -1,5 +1,4 @@
 import grails.util.BuildSettings
-import grails.util.Environment
 
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
 appender('STDOUT', ConsoleAppender) {
@@ -7,9 +6,12 @@ appender('STDOUT', ConsoleAppender) {
         pattern = "%level %logger - %msg%n"
     }
 }
+//
+logger'grails.app.init.cytomine.core.BootStrap', INFO
+logger'grails.app.domain.cytomine.core.utils.Version', INFO
 
 def targetDir = BuildSettings.TARGET_DIR
-if (Environment.isDevelopmentMode() && targetDir != null) {
+if (targetDir != null) {
     appender("FULL_STACKTRACE", FileAppender) {
         file = "${targetDir}/stacktrace.log"
         append = true

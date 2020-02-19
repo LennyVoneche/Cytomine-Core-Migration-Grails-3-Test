@@ -15,16 +15,20 @@ package cytomine.core
 //import cytomine.core.middleware.ImageServerService
 //import cytomine.core.processing.ImageRetrievalService
 import cytomine.core.security.SecUser
+import cytomine.core.utils.Version
+
 //import cytomine.core.test.Infos
 //import cytomine.core.utils.Version
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Environment
 import grails.util.Holders
+import grails.util.Metadata
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import java.lang.management.ManagementFactory
+
 class BootStrap {
 
     def grailsApplication
@@ -55,7 +59,6 @@ class BootStrap {
 //        //Register API Authentifier
 //        SpringSecurityUtils.clientRegisterFilter( 'apiAuthentificationFilter', SecurityFilterPosition.DIGEST_AUTH_FILTER.order + 1)
 //
-        print '005\n'
 
         log.info "#############################################################################"
         log.info "#############################################################################"
@@ -79,7 +82,10 @@ class BootStrap {
         log.info "#############################################################################"
         log.info "#############################################################################"
         log.info "#############################################################################"
-//
+
+        log.info "#############################################################################"
+        log.info "Information about configuration"
+
 //        [
 //                "Environment" : Environment.getCurrent().name,
 //                "Client": grailsApplication.config.grails.client,
@@ -91,16 +97,19 @@ class BootStrap {
 //                "Datasource properties": servletContext.getAttribute(ApplicationAttributes.APPLICATION_CONTEXT).dataSourceUnproxied.properties,
 //                "JVM Args" : ManagementFactory.getRuntimeMXBean().getInputArguments()
 //        ].each {
-//            log.info "##### " + it.key + " = " + it.value
+//            String st = it.key.toString() + " = " + it.value.toString()
+//            log.info "##### " + st
 //        }
-//        log.info "#############################################################################"
-//        log.info "#############################################################################"
-//        log.info "#############################################################################"
-//
-//        if(Version.count()==0) {
-//            log.info "Version was not set, set to last version"
-//            Version.setCurrentVersion(Long.parseLong(grailsApplication.metadata.'app.versionDate'))
-//        }
+
+        log.info "#############################################################################"
+        log.info "#############################################################################"
+        log.info "#############################################################################"
+
+        def version = new Version()
+        if(version.count()==0) {
+            log.info "Version was not set, set to last version"
+            version.setCurrentVersion(Long.parseLong(Metadata.current.'info.app.cytomineVersion'.toString()))
+        }
 //
 //        //Initialize marshallers and services
 //        log.info "init marshaller..."
@@ -222,5 +231,7 @@ class BootStrap {
 //
 //                response.sendRedirect url
 //        }
+        log.info "Fin du Bootstrap"
+
     }
 }

@@ -11,6 +11,8 @@ info:
         name: '@info.app.name@'
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
+        #Cytomine Version
+        cytomineVersion: 20190222
 spring:
     groovy:
         template:
@@ -156,5 +158,16 @@ environments:
                 testOnReturn: false
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+---
+##Grails Metadata file
+##Tue Jul 28 09:34:33 CEST 2015
+#app.context=/
+#app.grails.version=2.4.4
+#app.name=cytomine
+#app.servlet.version=2.5
+#cytomine:
+#versionDate: 20190222
+#app.version=1.3.5
+
 
 
