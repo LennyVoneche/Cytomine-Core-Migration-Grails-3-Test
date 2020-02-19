@@ -110,16 +110,17 @@ class BootStrap {
             log.info "Version was not set, set to last version"
             version.setCurrentVersion(Long.parseLong(Metadata.current.'info.app.cytomineVersion'.toString()))
         }
-//
-//        //Initialize marshallers and services
-//        log.info "init marshaller..."
-//        marshallersService.initMarshallers()
-//
+
+        //Initialize marshallers and services
+        log.info "init marshaller..."
+        marshallersService.initMarshallers()
+
+        // https://stackoverflow.com/questions/41461283/hibernate-sequence-table-is-generated
 //        log.info "init sequences..."
 //        sequenceService.initSequences()
-//
-//        log.info "init trigger..."
-//        triggerService.initTrigger()
+
+        log.info "init trigger..."
+        triggerService.initTrigger()
 //
 //        log.info "init index..."
 //        indexService.initIndex()

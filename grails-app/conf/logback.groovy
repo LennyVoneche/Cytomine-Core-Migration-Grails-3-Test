@@ -7,8 +7,14 @@ appender('STDOUT', ConsoleAppender) {
     }
 }
 //
-logger'grails.app.init.cytomine.core.BootStrap', INFO
-logger'grails.app.domain.cytomine.core.utils.Version', INFO
+logger'grails.app.init', INFO
+//logger'grails.app.init', DEBUG
+
+logger'grails.app.domain', INFO
+//logger'grails.app.domain', DEBUG
+
+logger'grails.app.services', INFO
+//logger'grails.app.services', DEBUG
 
 def targetDir = BuildSettings.TARGET_DIR
 if (targetDir != null) {
