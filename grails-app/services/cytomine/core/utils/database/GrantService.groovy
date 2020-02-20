@@ -19,44 +19,40 @@ import org.postgresql.util.PSQLException
 */
 
 /**
- * Sequence service provide new id for domain
+ * Created by IntelliJ IDEA.
+ * User: lrollus
+ * Date: 7/07/11
+ * Time: 15:16
+ * To change this template use File | Settings | File Templates.
  */
-//TODO SequenceService is deprecated
-// https://stackoverflow.com/questions/41461283/hibernate-sequence-table-is-generated
+//TODO GrantService is deprecated
 
-class SequenceService {
-
+class GrantService {
     def sessionFactory
-    public final static String SEQ_NAME = "hibernate_sequence"
+    def grailsApplication
     static transactional = true
 
-    /**
-     * Create database sequence
-     */
-    def initSequences() {
-        log.info 'initSequences method '
+    def initGrant() {
+        log.info "initGrant method"
         sessionFactory.getCurrentSession().clear();
         def connection = sessionFactory.currentSession.connection()
 
         try {
             def statement = connection.createStatement()
-            def dropSequenceQuery = ""//"DROP SEQUENCE IF EXISTS "+SEQ_NAME+";"
-            def createSequenceQuery = "CREATE SEQUENCE " + SEQ_NAME + " START 1;"
-            statement.execute(dropSequenceQuery + createSequenceQuery)
+            statement.execute(getGrantInfo())
         } catch (PSQLException e) {
-            log.debug e.toString()
+            log.info 'initGrant PSQLException method '
+            log.debug e
         }
 
     }
 
-    /**
-     * Get a new id number
-     */
-    def generateID() {
-        def statement = sessionFactory.currentSession.connection().createStatement()
-        def res = statement.executeQuery("select nextval('" + SEQ_NAME + "');")
-        res.next()
-        Long nextVal = res.getLong("nextval")
-        return nextVal
+    String getGrantInfo() {
+        String createroot = "create user root with password 'root';"
+        String createsudo = "create user sudo with password 'sudo';"
+        String grantroot = "GRANT postgres TO root;"
+        String grantsudo = "GRANT postgres TO sudo;"
+        return createroot + createsudo + grantroot + grantsudo
+        return  createsudo + grantsudo
     }
 }

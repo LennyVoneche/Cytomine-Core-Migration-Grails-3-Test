@@ -37,6 +37,7 @@ class MarshallersService {
      * Init marshaller for all cytomine domain
      */
     def initMarshallers() {
+        log.info "initMarshallers method"
         JSON.registerObjectMarshaller(Date) {
             return it?.time?.toString()
         }

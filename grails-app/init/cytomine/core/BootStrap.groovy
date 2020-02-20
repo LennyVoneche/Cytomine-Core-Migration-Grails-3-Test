@@ -16,6 +16,8 @@ package cytomine.core
 //import cytomine.core.processing.ImageRetrievalService
 import cytomine.core.security.SecUser
 import cytomine.core.utils.Version
+import grails.config.Config
+import grails.core.GrailsApplication
 
 //import cytomine.core.test.Infos
 //import cytomine.core.utils.Version
@@ -115,29 +117,31 @@ class BootStrap {
         log.info "init marshaller..."
         marshallersService.initMarshallers()
 
+        //TODO sequenceService is deprecated
         // https://stackoverflow.com/questions/41461283/hibernate-sequence-table-is-generated
 //        log.info "init sequences..."
 //        sequenceService.initSequences()
 
         log.info "init trigger..."
         triggerService.initTrigger()
-//
-//        log.info "init index..."
-//        indexService.initIndex()
-//
+
+        log.info "init index..."
+        indexService.initIndex()
+
+        //TODO grantService is deprecated
 //        log.info "init grant..."
 //        grantService.initGrant()
-//
-//        log.info "init table..."
-//        tableService.initTable()
-//
+
+        log.info "init table..."
+        tableService.initTable()
+
 //        log.info "init term service..."
 //        termService.initialize() //term service needs userservice and userservice needs termservice => init manualy at bootstrap
+
+        log.info "init retrieve errors hack..."
+        retrieveErrorsService.initMethods()
 //
-//        log.info "init retrieve errors hack..."
-//        retrieveErrorsService.initMethods()
-//
-//        // Initialize RabbitMQ server
+//        Initialize RabbitMQ server
 //        bootstrapUtilsService.initRabbitMq()
 //
 //        /* Fill data just in test environment*/
@@ -149,7 +153,7 @@ class BootStrap {
 //                    [username : Infos.ANOTHERLOGIN, firstname : 'Just another', lastname : 'User', email : grailsApplication.config.grails.admin.email, group : [[name : "Cytomine"]], password : grailsApplication.config.grails.adminPassword, color : "#FF0000", roles : ["ROLE_USER", "ROLE_ADMIN","ROLE_SUPER_ADMIN"]]
 //            ]
 //            bootstrapUtilsService.createUsers(usersSamples)
-//
+
 //            mockServicesForTests()
 //
 //        }  else if (SecUser.count() == 0) {
@@ -157,23 +161,24 @@ class BootStrap {
 //            bootstrapDataService.initData()
 //        }
 //
-//        //set public/private keys for special image server user
-//        //keys regenerated at each deployment with Docker
-//        //if keys deleted from external config files for security, keep old keys
-//        if(grailsApplication.config.grails.ImageServerPrivateKey && grailsApplication.config.grails.ImageServerPublicKey) {
-//            SecUser imageServerUser = SecUser.findByUsername("ImageServer1")
-//            imageServerUser.setPrivateKey(grailsApplication.config.grails.ImageServerPrivateKey)
-//            imageServerUser.setPublicKey(grailsApplication.config.grails.ImageServerPublicKey)
-//            imageServerUser.save(flush : true)
-//        }
-//        if(grailsApplication.config.grails.rabbitMQPrivateKey && grailsApplication.config.grails.rabbitMQPublicKey) {
-//            SecUser rabbitMQUser = SecUser.findByUsername("rabbitmq")
-//            if(rabbitMQUser) {
-//                rabbitMQUser.setPrivateKey(grailsApplication.config.grails.rabbitMQPrivateKey)
-//                rabbitMQUser.setPublicKey(grailsApplication.config.grails.rabbitMQPublicKey)
-//                rabbitMQUser.save(flush : true)
-//            }
-//        }
+        //set public/private keys for special image server user
+        //keys regenerated at each deployment with Docker
+        //if keys deleted from external config files for security, keep old keys
+        //TODO problems recovering data depending on the environment
+        if(Metadata.current.'grails.ImageServerPrivateKey' == null && Metadata.current.'grails.ImageServerPublicKey' == null) {
+            SecUser imageServerUser = SecUser.findByUsername("ImageServer1")
+            imageServerUser.setPrivateKey(Metadata.current.'grails.ImageServerPrivateKey'.toString())
+            imageServerUser.setPublicKey(Metadata.current.'grails.ImageServerPublicKey'.toString())
+            imageServerUser.save(flush : true)
+        }
+        if(Metadata.current.'grails.rabbitMQPrivateKey' == null && Metadata.current.'grails.rabbitMQPublicKey' == null) {
+            SecUser rabbitMQUser = SecUser.findByUsername("rabbitmq")
+            if(rabbitMQUser) {
+                rabbitMQUser.setPrivateKey(Metadata.current.'grails.rabbitMQPrivateKey'.toString())
+                rabbitMQUser.setPublicKey(Metadata.current.'grails.rabbitMQPublicKey'.toString())
+                rabbitMQUser.save(flush : true)
+            }
+        }
 //
 //        log.info "init change for old version..."
 //        bootstrapOldVersionService.execChangeForOldVersion()
@@ -189,7 +194,11 @@ class BootStrap {
 //
 //        fixPlugins()
 //    }
-//
+
+        log.info "Fin du Bootstrap"
+
+    }
+    //
 //    private void mockServicesForTests(){
 //        //mock services which use IMS
 //        ImageProcessingService.metaClass.getImageFromURL = {
@@ -232,7 +241,4 @@ class BootStrap {
 //
 //                response.sendRedirect url
 //        }
-        log.info "Fin du Bootstrap"
-
-    }
 }
