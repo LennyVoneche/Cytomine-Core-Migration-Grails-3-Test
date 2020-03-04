@@ -18,10 +18,10 @@ package cytomine.core.security
 
 import cytomine.core.CytomineDomain
 //import cytomine.core.Exception.AlreadyExistException
-//import be.cytomine.utils.JSONUtils
+//import cytomine.core.utils.JSONUtils
 import org.apache.commons.lang.builder.HashCodeBuilder
-//import org.restapidoc.annotation.RestApiObject
-//import org.restapidoc.annotation.RestApiObjectField
+////import org.restapidoc.annotation.RestApiObject
+////import org.restapidoc.annotation.RestApiObjectField
 
 /**
  * User - role link

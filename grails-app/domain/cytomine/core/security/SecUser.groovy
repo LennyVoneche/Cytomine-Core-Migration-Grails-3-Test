@@ -19,9 +19,9 @@ package cytomine.core.security
 import cytomine.core.CytomineDomain
 //import cytomine.core.Exception.AlreadyExistException
 //import cytomine.core.Exception.WrongArgumentException
-//import org.restapidoc.annotation.RestApiObject
-//import org.restapidoc.annotation.RestApiObjectField
-//import org.restapidoc.annotation.RestApiObjectFields
+////import org.restapidoc.annotation.RestApiObject
+////import org.restapidoc.annotation.RestApiObjectField
+////import org.restapidoc.annotation.RestApiObjectFields
 
 /**
  * Cytomine user.

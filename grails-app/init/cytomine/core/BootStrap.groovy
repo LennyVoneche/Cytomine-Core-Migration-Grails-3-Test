@@ -1,56 +1,39 @@
 package cytomine.core
 
-//import grails.plugin.springsecurity.SecurityFilterPosition
-//import grails.plugin.springsecurity.SpringSecurityUtils
-//import grails.util.Environment
-//import grails.util.Holders
-//
-//import javax.servlet.http.HttpServletRequest
-//import javax.servlet.http.HttpServletResponse
-//import java.lang.management.ManagementFactory
-
-//import cytomine.core.image.ImageProcessingService
-//import cytomine.core.utils.CytomineMailService
-//import cytomine.core.image.multidim.ImageGroupHDF5Service
-//import cytomine.core.middleware.ImageServerService
-//import cytomine.core.processing.ImageRetrievalService
 import cytomine.core.security.SecUser
+import cytomine.core.test.Infos
 import cytomine.core.utils.Version
-import grails.config.Config
-import grails.core.GrailsApplication
-
-//import cytomine.core.test.Infos
-//import cytomine.core.utils.Version
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Environment
 import grails.util.Holders
 import grails.util.Metadata
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import java.awt.GraphicsEnvironment
 import java.lang.management.ManagementFactory
 
 class BootStrap {
+//    def sequenceService
+//    def grantService
+    def termService
+
+
 
     def grailsApplication
 
-    def sequenceService
     def marshallersService
     def indexService
     def triggerService
-    def grantService
-    def termService
     def tableService
     def secUserService
     def noSQLCollectionService
 
     def retrieveErrorsService
     def bootstrapDataService
-
+//
     def bootstrapUtilsService
     def bootstrapOldVersionService
-
+//
     def dataSource
     def sessionFactory
 
@@ -59,8 +42,9 @@ class BootStrap {
     def init = { servletContext ->
 
 //        //Register API Authentifier
-//        SpringSecurityUtils.clientRegisterFilter( 'apiAuthentificationFilter', SecurityFilterPosition.DIGEST_AUTH_FILTER.order + 1)
-//
+        SpringSecurityUtils.clientRegisterFilter( 'apiAuthentificationFilter', SecurityFilterPosition.DIGEST_AUTH_FILTER.order + 1)
+        println "Hibernate version is: ${org.hibernate.Version.getVersionString()}"
+
 
         log.info "#############################################################################"
         log.info "#############################################################################"
@@ -88,20 +72,20 @@ class BootStrap {
         log.info "#############################################################################"
         log.info "Information about configuration"
 
-//        [
-//                "Environment" : Environment.getCurrent().name,
-//                "Client": grailsApplication.config.grails.client,
-//                "Server URL": grailsApplication.config.grails.serverURL,
-//                "Current directory": new File( './' ).absolutePath,
-//                "HeadLess: ": java.awt.GraphicsEnvironment.isHeadless(),
-//                "SQL": [url: Holders.config.dataSource.url, user:Holders.config.dataSource.username, password:Holders.config.dataSource.password, driver:Holders.config.dataSource.driverClassName],
-//                "NOSQL": [host:Holders.config.grails.mongo.host, port:Holders.config.grails.mongo.port, databaseName:Holders.config.grails.mongo.databaseName],
+        [
+                "Environment" : Environment.getCurrent().name,
+                "Client": Metadata.current.'grails.client'.toString(),
+                "Server URL": Metadata.current.'grails.serverURL'.toString(),
+                "Current directory": new File( './' ).absolutePath,
+                "HeadLess: ": GraphicsEnvironment.isHeadless(),
+                "SQL": [url: Holders.config.dataSource.url, user:Holders.config.dataSource.username, password:Holders.config.dataSource.password, driver:Holders.config.dataSource.driverClassName],
+                "NOSQL": [host:Holders.config.grails.mongo.host, port:Holders.config.grails.mongo.port, databaseName:Holders.config.grails.mongo.databaseName],
 //                "Datasource properties": servletContext.getAttribute(ApplicationAttributes.APPLICATION_CONTEXT).dataSourceUnproxied.properties,
-//                "JVM Args" : ManagementFactory.getRuntimeMXBean().getInputArguments()
-//        ].each {
-//            String st = it.key.toString() + " = " + it.value.toString()
-//            log.info "##### " + st
-//        }
+                "JVM Args" : ManagementFactory.getRuntimeMXBean().getInputArguments()
+        ].each {
+            String st = it.key.toString() + " = " + it.value.toString()
+            log.info "##### " + st
+        }
 
         log.info "#############################################################################"
         log.info "#############################################################################"
@@ -136,13 +120,13 @@ class BootStrap {
         tableService.initTable()
 
 //        log.info "init term service..."
-//        termService.initialize() //term service needs userservice and userservice needs termservice => init manualy at bootstrap
+        termService.initialize() //term service needs userservice and userservice needs termservice => init manualy at bootstrap
 
         log.info "init retrieve errors hack..."
         retrieveErrorsService.initMethods()
 //
 //        Initialize RabbitMQ server
-//        bootstrapUtilsService.initRabbitMq()
+        bootstrapUtilsService.initRabbitMq()
 //
 //        /* Fill data just in test environment*/
 //        log.info "fill with data..."
@@ -158,7 +142,7 @@ class BootStrap {
 //
 //        }  else if (SecUser.count() == 0) {
 //            //if database is empty, put minimal data
-//            bootstrapDataService.initData()
+            bootstrapDataService.initData()
 //        }
 //
         //set public/private keys for special image server user
@@ -180,15 +164,15 @@ class BootStrap {
             }
         }
 //
-//        log.info "init change for old version..."
-//        bootstrapOldVersionService.execChangeForOldVersion()
+        log.info "init change for old version..."
+        bootstrapOldVersionService.execChangeForOldVersion()
 //
-//        log.info "create multiple IS and Retrieval..."
-//        bootstrapUtilsService.createMultipleIS()
-//        bootstrapUtilsService.createMultipleRetrieval()
+        log.info "create multiple IS and Retrieval..."
+        bootstrapUtilsService.createMultipleIS()
+        bootstrapUtilsService.createMultipleRetrieval()
 //
-//        bootstrapUtilsService.fillProjectConnections();
-//        bootstrapUtilsService.fillImageConsultations();
+        bootstrapUtilsService.fillProjectConnections();
+        bootstrapUtilsService.fillImageConsultations();
 //
 //        bootstrapUtilsService.initProcessingServerQueues()
 //

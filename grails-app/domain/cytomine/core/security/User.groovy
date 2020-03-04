@@ -1,5 +1,7 @@
 package cytomine.core.security
 
+import cytomine.core.utils.JSONUtils
+
 /*
 * Copyright (c) 2009-2017. Authors: see NOTICE file.
 *
@@ -16,10 +18,10 @@ package cytomine.core.security
 * limitations under the License.
 */
 
-//import be.cytomine.utils.JSONUtils
-//import org.restapidoc.annotation.RestApiObject
-//import org.restapidoc.annotation.RestApiObjectField
-//import org.restapidoc.annotation.RestApiObjectFields
+//import cytomine.core.utils.JSONUtils
+////import org.restapidoc.annotation.RestApiObject
+////import org.restapidoc.annotation.RestApiObjectField
+////import org.restapidoc.annotation.RestApiObjectFields
 
 /**
  * A cytomine human user
@@ -61,17 +63,18 @@ class User extends SecUser {
     }
 
     static mapping = {
+        table '`User`'
         id(generator: 'assigned', unique: true)
         sort "id"
         cache true
     }
 
     def beforeInsert() {
-        Object.beforeInsert()
+        super.beforeInsert()
     }
 
     def beforeUpdate() {
-        Object.beforeUpdate()
+        super.beforeUpdate()
     }
 
     /**
@@ -101,27 +104,27 @@ class User extends SecUser {
      * @return Domain with json data filled
      */         
     static User insertDataIntoDomain(def json, def domain = new User()) {
-//        domain.id = JSONUtils.getJSONAttrLong(json,'id',null)
-//        domain.username = JSONUtils.getJSONAttrStr(json,'username')
-//        domain.firstname = JSONUtils.getJSONAttrStr(json,'firstname')
-//        domain.lastname = JSONUtils.getJSONAttrStr(json,'lastname')
-//        domain.email = JSONUtils.getJSONAttrStr(json,'email')
-//        domain.color = JSONUtils.getJSONAttrStr(json,'color')
-//        domain.skypeAccount = JSONUtils.getJSONAttrStr(json,'skypeAccount')
-//        domain.sipAccount = JSONUtils.getJSONAttrStr(json,'sipAccount')
-//        if (json.password && domain.password != null) {
-//            domain.newPassword = JSONUtils.getJSONAttrStr(json,'password') //user is updated
-//        } else if (json.password) {
-//            domain.password = JSONUtils.getJSONAttrStr(json,'password') //user is created
-//        }
-//        domain.created = JSONUtils.getJSONAttrDate(json, 'created')
-//        domain.updated = JSONUtils.getJSONAttrDate(json, 'updated')
-//        domain.enabled = JSONUtils.getJSONAttrBoolean(json,'enabled', true)
-//
-//        if (domain.getPublicKey() == null || domain.getPrivateKey() == null || json.publicKey == "" || json.privateKey == "") {
-//            domain.generateKeys()
-//        }
-//        return domain;
+        domain.id = JSONUtils.getJSONAttrLong(json,'id',null)
+        domain.username = JSONUtils.getJSONAttrStr(json,'username')
+        domain.firstname = JSONUtils.getJSONAttrStr(json,'firstname')
+        domain.lastname = JSONUtils.getJSONAttrStr(json,'lastname')
+        domain.email = JSONUtils.getJSONAttrStr(json,'email')
+        domain.color = JSONUtils.getJSONAttrStr(json,'color')
+        domain.skypeAccount = JSONUtils.getJSONA
+        domain.sipAccount = JSONUtils.getJSONAttrStr(json,'sipAccount')
+        if (json.password && domain.password != null) {
+            domain.newPassword = JSONUtils.getJSONAttrStr(json,'password') //user is updated
+        } else if (json.password) {
+            domain.password = JSONUtils.getJSONAttrStr(json,'password') //user is created
+        }
+        domain.created = JSONUtils.getJSONAttrDate(json, 'created')
+        domain.updated = JSONUtils.getJSONAttrDate(json, 'updated')
+        domain.enabled = JSONUtils.getJSONAttrBoolean(json,'enabled', true)
+
+        if (domain.getPublicKey() == null || domain.getPrivateKey() == null || json.publicKey == "" || json.privateKey == "") {
+            domain.generateKeys()
+        }
+        return domain;
     }    
 
     /**

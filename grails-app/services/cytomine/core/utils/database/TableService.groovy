@@ -1,5 +1,7 @@
 package cytomine.core.utils.database
 
+import grails.transaction.Transactional
+
 /*
 * Copyright (c) 2009-2017. Authors: see NOTICE file.
 *
@@ -26,13 +28,12 @@ import org.postgresql.util.PSQLException
  * Time: 15:16
  * Service used to create index at the application begining
  */
+@Transactional
 class TableService {
 
     def sessionFactory
     def dataSource
-    def grailsApplication
     public final static String SEQ_NAME = "CYTOMINE_SEQ"
-    static transactional = true
 
     /**
      * Create domain index
@@ -41,24 +42,35 @@ class TableService {
         log.info "initTable method"
 
         sessionFactory.getCurrentSession().clear();
+        print getClass().getName() + ' initTable : ' + '001' + '\n'
+
         def connection = sessionFactory.currentSession.connection()
+        print getClass().getName() + ' initTable : ' + '002' + '\n'
 
         try {
 
+            print 'Voici dataSource --> ' + dataSource + ' !!! ' + '\n'
             if(executeSimpleRequest("select character_maximum_length from information_schema.columns where table_name = 'command' and column_name = 'data'")!=null) {
                 log.debug "Change type..."
+                print getClass().getName() + ' initTable : ' + '002.1' + '\n'
                 new Sql(dataSource).executeUpdate("alter table command alter column data type character varying")
             }
+            print getClass().getName() + ' initTable : ' + '003' + '\n'
 
             if(executeSimpleRequest("select character_maximum_length from information_schema.columns where table_name = 'shared_annotation' and column_name = 'comment'")!=null) {
                 log.debug "Change type..."
+                print getClass().getName() + ' initTable : ' + '003.1' + '\n'
                 new Sql(dataSource).executeUpdate("alter table shared_annotation alter column comment type character varying")
             }
+            print getClass().getName() + ' initTable : ' + '004' + '\n'
 
             if(executeSimpleRequest("select character_maximum_length from information_schema.columns where table_name = 'property' and column_name = 'value'")!=null) {
                 log.debug "Change type property table..."
+                print getClass().getName() + ' initTable : ' + '004.1' + '\n'
+
                 new Sql(dataSource).executeUpdate("alter table property alter column value type character varying")
             }
+            print getClass().getName() + ' initTable : ' + '005' + '\n'
 
             String reqcreate
 
@@ -72,6 +84,7 @@ class TableService {
                                 "AND sec_user.user_id is null\n" +
                                 "AND mask >= 1 AND project.deleted IS NULL"
             createRequest('user_project',reqcreate)
+            print getClass().getName() + ' initTable : ' + '006' + '\n'
 
             reqcreate = "CREATE VIEW admin_project AS\n" +
                                 "SELECT distinct project.*, sec_user.id as user_id\n" +
@@ -83,6 +96,7 @@ class TableService {
                                 "AND sec_user.user_id is null\n" +
                                 "AND mask >= 16 AND project.deleted IS NULL"
             createRequest('admin_project',reqcreate)
+            print getClass().getName() + ' initTable : ' + '007' + '\n'
 
             reqcreate = "CREATE VIEW creator_project AS\n" +
                                 "SELECT distinct project.*, sec_user.id as user_id\n" +
@@ -92,6 +106,7 @@ class TableService {
                                 "AND acl_object_identity.owner_sid = acl_sid.id\n" +
                                 "AND sec_user.user_id is null AND project.deleted IS NULL"
             createRequest('creator_project',reqcreate)
+            print getClass().getName() + ' initTable : ' + '008' + '\n'
 
             reqcreate = "CREATE VIEW user_image AS\n" +
                     "SELECT distinct image_instance.*, abstract_image.filename, abstract_image.original_filename, project.name as project_name, sec_user.id as user_image_id\n" +
@@ -108,6 +123,7 @@ class TableService {
                     "AND sec_user.user_id is null\n" +
                     "AND mask >= 1"
             createRequest('user_image',reqcreate)
+            print getClass().getName() + ' initTable : ' + '009' + '\n'
 
         } catch (PSQLException e) {
             log.info "initTable PSQLException method"
@@ -118,34 +134,47 @@ class TableService {
     def executeSimpleRequest(String request) {
         def response = null
         log.debug "request = $request"
+        print getClass().getName() + ' executeSimpleRequest : ' + '001' + '\n'
+
         new Sql(dataSource).eachRow(request) {
-            log.debug it[0]
+            print getClass().getName() + ' executeSimpleRequest : ' + '001.1' + '\n'
+            log.debug it[0].toString()
             response = it[0]
         }
+        print getClass().getName() + ' executeSimpleRequest : ' + '002' + '\n'
+
         log.debug "response = $response"
         response
     }
 
     def createRequest(def name,def reqcreate) {
         try {
+            print getClass().getName() + ' createRequest : ' + '001' + '\n'
 
             boolean alreadyExist = false
 
             new Sql(dataSource).eachRow("select table_name from INFORMATION_SCHEMA.views where table_name like ?",[name]) {
+                print getClass().getName() + ' createRequest : ' + '001.1' + '\n'
                 alreadyExist = true
             }
+            print getClass().getName() + ' createRequest : ' + '002' + '\n'
 
             if(alreadyExist) {
                 def req =  "DROP VIEW " + name
                 new Sql(dataSource).execute(req)
+                print getClass().getName() + ' createRequest : ' + '002.1' + '\n'
 
             }
             log.debug reqcreate
+            print getClass().getName() + ' createRequest : ' + '004' + '\n'
+
             new Sql(dataSource).execute(reqcreate)
+            print getClass().getName() + ' createRequest : ' + '004' + '\n'
 
 
         } catch(Exception e) {
-            log.error e
+            print getClass().getName() + ' createRequest (Exception) : ' + '005' + '\n'
+            log.error e.toString()
         }
     }
 }

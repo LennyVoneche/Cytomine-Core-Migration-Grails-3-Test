@@ -1,3 +1,4 @@
+package spring
 /*
 * Copyright (c) 2009-2017. Authors: see NOTICE file.
 *
@@ -15,32 +16,37 @@
 */
 
 
-//import be.cytomine.ldap.CustomUserContextMapper
-//import be.cytomine.security.CASLdapUserDetailsService
-//import be.cytomine.security.SimpleUserDetailsService
-//import be.cytomine.web.CytomineMultipartHttpServletRequest
+import cytomine.core.ldap.CustomUserContextMapper
+import cytomine.core.security.CASLdapUserDetailsService
+import cytomine.core.security.SimpleUserDetailsService
+import cytomine.core.web.CytomineMultipartHttpServletRequest
+import cytomine.web.APIAuthentificationFilters
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.cache.ehcache.EhCacheFactoryBean
+import org.springframework.security.ldap.DefaultSpringSecurityContextSource
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator
+import org.springframework.security.ldap.userdetails.LdapUserDetailsService
 
 //import grails.plugin.springsecurity.SpringSecurityUtils
 // Place your Spring DSL code here
 beans = {
 //    (LogoutEventListener)
 
-//    'apiAuthentificationFilter'(cytomine.web.APIAuthentificationFilters) {
-//        // properties
-//    }
-    print '001\n'
-//    'multipartResolver'(CytomineMultipartHttpServletRequest) {
-//        // Max in memory 100kbytes
-//        maxInMemorySize=10240
-//
-//        //100Gb Max upload size
-//        maxUploadSize=102400000000
-//
-//
-//    }
-    print '002\n'
+    'apiAuthentificationFilter'(APIAuthentificationFilters) {
+        // properties
+    }
+    print getClass().getName() + ' : ' + '001' + '\n'
+    'multipartResolver'(CytomineMultipartHttpServletRequest) {
+        // Max in memory 100kbytes
+        maxInMemorySize=10240
+
+        //100Gb Max upload size
+        maxUploadSize=102400000000
+
+
+    }
+    print getClass().getName() + ' : ' + '002' + '\n'
 
     springConfig.addAlias "springSecurityService", "springSecurityCoreSpringSecurityService"
 
@@ -51,20 +57,20 @@ beans = {
 
 
     if(config.ldap.active){
-        initialDirContextFactory(org.springframework.security.ldap.DefaultSpringSecurityContextSource,
+        initialDirContextFactory(DefaultSpringSecurityContextSource,
                 config.ldap.context.server){
             userDn = config.ldap.context.managerDn
             password = config.ldap.context.managerPassword
             anonymousReadOnly = config.ldap.context.anonymousReadOnly
         }
 
-        ldapUserSearch(org.springframework.security.ldap.search.FilterBasedLdapUserSearch,
+        ldapUserSearch(FilterBasedLdapUserSearch,
                 config.ldap.search.base,
                 config.ldap.search.filter,
                 initialDirContextFactory){
         }
 
-        ldapAuthoritiesPopulator(org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator,
+        ldapAuthoritiesPopulator(DefaultLdapAuthoritiesPopulator,
                 initialDirContextFactory,
                 config.ldap.authorities.groupSearchBase){
             groupRoleAttribute = config.ldap.authorities.groupRoleAttribute
@@ -76,7 +82,7 @@ beans = {
 
         ldapUserDetailsMapper(CustomUserContextMapper)
 
-        ldapUserDetailsService(org.springframework.security.ldap.userdetails.LdapUserDetailsService,
+        ldapUserDetailsService(LdapUserDetailsService,
                 ldapUserSearch,
                 ldapAuthoritiesPopulator){
             userDetailsMapper = ref('ldapUserDetailsMapper')
@@ -87,19 +93,19 @@ beans = {
             grailsApplication = ref('grailsApplication')
         }
     } else {
-        print '003\n'
-        //userDetailsService(SimpleUserDetailsService)
+        print getClass().getName() + ' : ' + '003' + '\n'
+        userDetailsService(SimpleUserDetailsService)
     }
 
     ehcacheAclCache(EhCacheFactoryBean) {
         cacheManager = ref('aclCacheManager')
         cacheName = 'aclCache'
-        overflowToDisk = false
     }
 
-//    currentRoleServiceProxy(org.springframework.aop.scope.ScopedProxyFactoryBean) {
-//        targetBeanName = 'currentRoleService'
-//        proxyTargetClass = true
-//    }
-    print '004\n'
+    currentRoleServiceProxy(org.springframework.aop.scope.ScopedProxyFactoryBean) {
+        targetBeanName = 'currentRoleService'
+        proxyTargetClass = true
+    }
+    print getClass().getName() + ' : ' + '004' + '\n'
+
 }

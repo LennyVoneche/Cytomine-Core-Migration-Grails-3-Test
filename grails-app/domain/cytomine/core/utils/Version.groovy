@@ -16,12 +16,10 @@ package cytomine.core.utils
 * limitations under the License.
 */
 
-//import groovy.util.logging.Log
 
 /**
  * Cytomine version history
  */
-//@Log
 class Version {
 
     Long number

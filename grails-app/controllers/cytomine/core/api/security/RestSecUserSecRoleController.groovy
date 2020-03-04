@@ -1,6 +1,6 @@
 package cytomine.core.api.security
 
-//import be.cytomine.Exception.CytomineException
+//import cytomine.core.Exception.CytomineException
 
 /*
 * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -25,11 +25,11 @@ import cytomine.core.security.SecUser
 import cytomine.core.security.SecUserSecRole
 import cytomine.core.security.User
 import grails.converters.JSON
-//import org.restapidoc.annotation.RestApi
-//import org.restapidoc.annotation.RestApiMethod
-//import org.restapidoc.annotation.RestApiParam
-//import org.restapidoc.annotation.RestApiParams
-//import org.restapidoc.pojo.RestApiParamType
+////import org.restapidoc.annotation.RestApi
+////import org.restapidoc.annotation.RestApiMethod
+////import org.restapidoc.annotation.RestApiParam
+////import org.restapidoc.annotation.RestApiParams
+////import org.restapidoc.pojo.RestApiParamType
 
 /**
  * Controller to manage user role

@@ -30,7 +30,8 @@
 * limitations under the License.
 */
 //
-//import be.cytomine.Exception.ForbiddenException
+import cytomine.core.Exception.ForbiddenException
+import cytomine.core.Exception.ObjectNotFoundException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.acls.model.NotFoundException
 
@@ -63,7 +64,7 @@ class UrlMappings {
         "500"(controller: "errors", action: "error403", exception: AccessDeniedException)
         "500"(controller: "errors", action: "error403", exception: NotFoundException)
         "500"(controller: "errors", action: "error403", exception: ForbiddenException)
-        //       "500.$format"(controller: "errors", action: "error404", exception: ObjectNotFoundException)
+        "500.$format"(controller: "errors", action: "error404", exception: ObjectNotFoundException)
 
         "/processing/detect/$image/$x/$y.$format"(controller:"processing") {
             action = [GET : "detect"]

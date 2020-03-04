@@ -1,0 +1,141 @@
+package cytomine.core.ontology
+
+/*
+* Copyright (c) 2009-2017. Authors: see NOTICE file.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+import cytomine.core.Exception.CytomineException
+import cytomine.core.command.*
+import cytomine.core.project.Project
+import cytomine.core.security.SecUser
+import cytomine.core.utils.ModelService
+import cytomine.core.utils.Task
+import org.springframework.security.acls.domain.BasePermission
+
+import static org.springframework.security.acls.domain.BasePermission.READ
+
+class AnnotationFilterService extends ModelService {
+
+    static transactional = true
+
+    def cytomineService
+    def transactionService
+    def securityACLService
+
+    def currentDomain() {
+        return AnnotationFilter
+    }
+
+    def listByProject(Project project) {
+        securityACLService.check(project, BasePermission.READ)
+        return AnnotationFilter.findAllByProject(project)
+    }
+
+    AnnotationFilter read(def id) {
+        def filter = AnnotationFilter.read(id)
+        if (filter) {
+            securityACLService.check(filter.container(), BasePermission.READ)
+        }
+        filter
+    }
+
+    /**
+     * Add the new domain with JSON data
+     * @param json New domain data
+     * @return Response structure (created domain data,..)
+     */
+    def add(def json) throws CytomineException {
+        securityACLService.check(json.project,Project, BasePermission.READ)
+        SecUser currentUser = cytomineService.getCurrentUser()
+        return executeCommand(new AddCommand(user: currentUser),null,json)
+    }
+
+    /**
+     * Update this domain with new data from json
+     * @param domain Domain to update
+     * @param jsonNewData New domain datas
+     * @return  Response structure (new domain data, old domain data..)
+     */
+    def update(cytomine.core.ontology.AnnotationFilter af, def jsonNewData) throws CytomineException {
+        SecUser currentUser = cytomineService.getCurrentUser()
+        securityACLService.checkIsCreator(af,currentUser)
+        return executeCommand(new EditCommand(user: currentUser), af, jsonNewData)
+    }
+
+    /**
+     * Delete this domain
+     * @param domain Domain to delete
+     * @param transaction Transaction link with this command
+     * @param task Task for this command
+     * @param printMessage Flag if client will print or not confirm message
+     * @return Response structure (code, old domain,..)
+     */
+    def delete(AnnotationFilter domain, Transaction transaction = null, Task task = null, boolean printMessage = true) {
+        SecUser currentUser = cytomineService.getCurrentUser()
+        securityACLService.checkIsCreator(domain,currentUser)
+        Command c = new DeleteCommand(user: currentUser,transaction:transaction)
+        return executeCommand(c,domain,null)
+    }
+
+    def getStringParamsI18n(def domain) {
+        return [domain.id]
+    }
+
+    /**
+     * Delete all annotations filters which contains a Term instance
+     * @param term
+     */
+    def deleteFiltersFromTerm(Term term) {
+        def annotationsFilters = AnnotationFilter.createCriteria().list {
+            terms {
+                idEq(term.id)
+            }
+        }
+        annotationsFilters.each {
+            destroy(it, true)
+        }
+    }
+//
+//
+//    def deleteDependentHasManyTerms(AnnotationFilter project, Transaction transaction) {
+//        project.terms?.clear()
+//    }
+//
+//    def deleteDependentHasManySecUser(AnnotationFilter project, Transaction transaction) {
+//        project
+//    }
+
+
+
+//        def deleteDependentHasManyTerms(AnnotationFilter project, Transaction transaction) {
+//            //remove Retrieval-project where this project is set
+//           def criteria = Project.createCriteria()
+//            List<Project> projectsThatUseThisProjectForRetrieval = criteria.list {
+//              retrievalProjects {
+//                  eq('id', project.id)
+//              }
+//            }
+//
+//            projectsThatUseThisProjectForRetrieval.each {
+//                it.refresh()
+//                it.removeFromRetrievalProjects(project)
+//                it.save(flush: true)
+//            }
+//
+//
+//            project.retrievalProjects?.clear()
+//    }
+
+}

@@ -5,7 +5,7 @@ grails:
         defaultPackage: cytomine.core
     spring:
         transactionManagement:
-            proxies: false
+            proxies: true
 
 info:
     app:
@@ -20,7 +20,7 @@ spring:
             check-template-location: false
 # Spring Actuator Endpoints are Disabled by Default
 endpoints:
-    enabled: false
+    enabled: true
     jmx:
         enabled: true
 
@@ -100,7 +100,7 @@ grails:
             domainSuffix: Instance
     json:
         legacy:
-            builder: false
+            builder: true
     enable:
         native2ascii: true
     logging:
@@ -119,38 +119,23 @@ hibernate:
         use_second_level_cache: true
         use_query_cache: false
         region:
-            factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
+            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
     singleSession: true
 
 dataSource:
     pooled: true
-    driverClassName: 'org.postgresql.Driver'
-    username: postgre
+    driverClassName: org.postgresql.Driver
+    username: postgres
     dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
 
 
 environments:
-    scratch:
-        dataSource:
-            dbCreate: 'update'
-            url: 'jdbc:postgresql://localhost:5432/cytomineempty'
-            password: 'postgres'
-            properties:
-                jmxEnabled: true
-                initialSize: 10
-                maxActive: 500
-                minIdle: 10
-                maxIdle: 500
-                maxWait: 30000
-                maxAge: 300000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
     development:
         dataSource:
-            dbCreate: 'update'
-            url: 'jdbc:postgresql://localhost:5432/docker'
-            username: 'docker'
-            password: 'docker'
+            dbCreate: update
+            url: jdbc:postgresql://localhost:5432/docker
+            username: docker
+            password: docker
             properties:
                 jmxEnabled: true
                 initialSize: 10
@@ -161,82 +146,12 @@ environments:
                 maxAge: 300000
                 timeBetweenEvictionRunsMillis: 5000
                 minEvictableIdleTimeMillis: 60000
-    test:
-        dataSource:
-            dbCreate: 'create'
-            url: 'jdbc:postgresql://localhost:5432/docker'
-            username: 'docker'
-            password: 'docker'
-            properties:
-                jmxEnabled: true
-                initialSize: 10
-                maxActive: 500
-                minIdle: 10
-                maxIdle: 500
-                maxWait: 30000
-                maxAge: 300000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
-    production:
-        dataSource:
-            dbCreate: 'update'
-            url: 'jdbc:postgresql://localhost:5432/docker'
-            username: 'docker'
-            password: 'docker'
-            properties:
-                jmxEnabled: true
-                initialSize: 10
-                maxActive: 500
-                minIdle: 10
-                maxIdle: 500
-                maxWait: 30000
-                maxAge: 300000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
-    perf:
-        dataSource:
-            dbCreate: 'update'
-            url: 'jdbc:postgresql://localhost:5433/cytomineperf'
-            password: 'postgres'
-            properties:
-                jmxEnabled: true
-                initialSize: 10
-                maxActive: 500
-                minIdle: 10
-                maxIdle: 500
-                maxWait: 30000
-                maxAge: 300000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
-    testrun:
-        dataSource:
-            dbCreate: 'create'
-            url: 'jdbc:postgresql://localhost:5432/cytominetestrun'
-            password: 'postgres'
-            properties:
-                jmxEnabled: true
-                initialSize: 10
-                maxActive: 500
-                minIdle: 10
-                maxIdle: 500
-                maxWait: 30000
-                maxAge: 300000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
-#                validationQuery: SELECT 1
-#                validationQueryTimeout: 3
-#                validationInterval: 15000
-#                testOnBorrow: true
-#                testWhileIdle: true
-#                testOnReturn: false
-#                jdbcInterceptors: ConnectionState
-#                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
 
 grails:
     mongo:
-        host: 'localhost'
+        host: localhost
         port: 27017
-        databaseName: 'cytomine'
+        databaseName: cytomine
         options:
             connectionsPerHost: 10
             threadsAllowedToBlockForConnectionMultiplier: 5
@@ -246,28 +161,28 @@ cytomine:
     customUI:
         global:
             - dashboard:
-                    - 'ALL'
+                - ALL
             - search:
-                - 'ROLE_ADMIN'
+                - ROLE_ADMIN
             - project:
-                - 'ALL'
+                - ALL
             - ontology:
-                - 'ROLE_ADMIN'
+                - ROLE_ADMIN
             - storage:
-                - 'ROLE_USER'
-                - 'ROLE_ADMIN'
+                - ROLE_USER
+                - ROLE_ADMIN
             - software:
-                - 'ROLE_USER'
-                - 'ROLE_ADMIN'
+                - ROLE_USER
+                - ROLE_ADMIN
             - activity:
-                -  'ALL'
+                -  ALL
             - explore:
-                - 'ROLE_USER'
-                - 'ROLE_ADMIN'
+                - ROLE_USER
+                - ROLE_ADMIN
             - admin:
-                - 'ROLE_ADMIN'
+                - ROLE_ADMIN
             - help:
-                - 'ALL'
+                - ALL
         project:
             - project-annotations-tab:
                 - ADMIN_PROJECT: true
@@ -295,11 +210,11 @@ cytomine:
                 - CONTRIBUTOR_PROJECT: false
     software:
         path:
-            softwareImages: '/data/softwares/images'
+            softwareImages: /data/softwares/images
     middleware:
         rabbitmq:
-            user: 'router'
-            password: 'router'
+            user: router
+            password: router
 #        storage_path="/data/images" //default path for image locations
 #    fast_data_path="/data/images" //default path for HDF5 files location (for ex: a SSD)
     annotation:
@@ -307,19 +222,19 @@ cytomine:
     maxRequestSize: 10485760
     jobdata:
         filesystem: false
-        filesystemPath: 'algo/data/'
+        filesystemPath: algo/data/
 
 grails:
     admin:
-        email: 'info@cytomine.org'
+        email: info@cytomine.org
     notification:
         email: ''
         password: ''
         smtp:
-            host: 'smtp.gmail.com'
-            port: '587'
-    client: 'NO'
-    messageBrokerServerURL: 'rabbitmq:5672'
+            host: smtp.gmail.com
+            port: 587
+    client: NO
+    messageBrokerServerURL: rabbitmq:5672
     LTIConsumer: []
     readOnlyProjectsByDefault: false
     retrieval:
@@ -327,37 +242,37 @@ grails:
     software:
         enabled: true
 
-    serverURL: 'http://localhost-core'
-    uploadURL: 'http://localhost-upload'
+    serverURL: http://localhost-core
+    uploadURL: http://localhost-upload
     imageServerURL:
-        - 'http://localhost-ims'
+        - http://localhost-ims
     retrievalServerURL:
-        - 'http://localhost-retrieval'
+        - http://localhost-retrieval
     plugin:
         springsecurity:
             useBasicAuth: false
     ressources:
         adhoc:
             patterns:
-                - '/images/*'
-                - '/js/*'
-                - '/css/jsondoc/*'
+                - /images/*
+                - /js/*
+                - /css/jsondoc/*
         processing:
             enabled: false
     converters:
         default:
             pretty:
                 print: true
-    retrievalUsername: 'cytomine'
-    retrievalPassword: 'retrieval_default'
-    adminPassword: 'admin'
-    ImageServerPrivateKey: 'ABC'
-    ImageServerPublicKey: 'DEF'
-    adminPrivateKey: 'GHI'
-    adminPublicKey: 'JKL'
-    superAdminPrivateKey: 'MNO'
-    superAdminPublicKey: 'POR'
-    rabbitMQPrivateKey: 'STU'
-    rabbitMQPublicKey: 'VWX'
+    retrievalUsername: cytomine
+    retrievalPassword: retrieval_default
+    adminPassword: admin
+    ImageServerPrivateKey: ABC
+    ImageServerPublicKey: DEF
+    adminPrivateKey: GHI
+    adminPublicKey: JKL
+    superAdminPrivateKey: MNO
+    superAdminPublicKey: POR
+    rabbitMQPrivateKey: STU
+    rabbitMQPublicKey: VWX
 
 

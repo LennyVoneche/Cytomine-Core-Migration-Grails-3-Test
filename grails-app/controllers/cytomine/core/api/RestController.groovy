@@ -16,7 +16,7 @@ package cytomine.core.api
 * limitations under the License.
 */
 
-//import be.cytomine.Exception.CytomineException
+import cytomine.core.Exception.CytomineException
 import cytomine.core.test.HttpClient
 import cytomine.core.utils.Task
 import grails.converters.JSON
@@ -25,10 +25,10 @@ import org.grails.web.json.JSONArray
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
-class RestController {
+ class RestController {
 
     def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+//    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def springSecurityService
 
     static final int NOT_FOUND_CODE = 404

@@ -538,9 +538,9 @@ class TriggerService {
             currentUserAnnotation user_annotation%ROWTYPE;
             currentAlgoAnnotation algo_annotation%ROWTYPE;
         BEGIN
-            IF NEW.annotation_class_name = 'be.cytomine.ontology.AlgoAnnotation' THEN
+            IF NEW.annotation_class_name = 'cytomine.core.ontology.AlgoAnnotation' THEN
                 SELECT * INTO currentAlgoAnnotation FROM algo_annotation where id = NEW.annotation_ident FOR UPDATE;
-            ELSIF NEW.annotation_class_name = 'be.cytomine.ontology.UserAnnotation' THEN
+            ELSIF NEW.annotation_class_name = 'cytomine.core.ontology.UserAnnotation' THEN
                 SELECT * INTO currentUserAnnotation FROM user_annotation where id = NEW.annotation_ident FOR UPDATE;
             END IF;
             RETURN NEW;
@@ -561,11 +561,11 @@ class TriggerService {
         String createFunction = """
         CREATE OR REPLACE FUNCTION afterInsertComment() RETURNS trigger AS \$incSharedAnnAfter\$
         BEGIN
-            IF NEW.annotation_class_name = 'be.cytomine.ontology.AlgoAnnotation' THEN
+            IF NEW.annotation_class_name = 'cytomine.core.ontology.AlgoAnnotation' THEN
                 UPDATE algo_annotation
                 SET count_comments = count_comments + 1
                 WHERE id = NEW.annotation_ident;
-            ELSIF NEW.annotation_class_name = 'be.cytomine.ontology.UserAnnotation' THEN
+            ELSIF NEW.annotation_class_name = 'cytomine.core.ontology.UserAnnotation' THEN
                 UPDATE user_annotation
                 SET count_comments = count_comments + 1
                 WHERE id = NEW.annotation_ident;
@@ -597,8 +597,8 @@ class TriggerService {
            currentProject  project%ROWTYPE;
            currentAnnotationIndex  annotation_index%ROWTYPE;
            current_class reviewed_annotation.parent_class_name%TYPE;
-           algo_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.AlgoAnnotation';
-           user_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.UserAnnotation';
+           algo_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.AlgoAnnotation';
+           user_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.UserAnnotation';
            currentUserAnnotation user_annotation%ROWTYPE;
            currentAlgoAnnotation algo_annotation%ROWTYPE;
         BEGIN
@@ -632,8 +632,8 @@ class TriggerService {
         CREATE OR REPLACE FUNCTION incrementAnnotationReviewedAnnotation() RETURNS trigger as \$incAnnRevAnn\$
         DECLARE
            current_class reviewed_annotation.parent_class_name%TYPE;
-           algo_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.AlgoAnnotation';
-           user_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.UserAnnotation';
+           algo_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.AlgoAnnotation';
+           user_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.UserAnnotation';
             alreadyExist INTEGER;
             current_id annotation_index.id%TYPE;
         BEGIN
@@ -689,8 +689,8 @@ class TriggerService {
             currentProject  project%ROWTYPE;
             currentAnnotationIndex  annotation_index%ROWTYPE;
            current_class reviewed_annotation.parent_class_name%TYPE;
-           algo_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.AlgoAnnotation';
-           user_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.UserAnnotation';
+           algo_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.AlgoAnnotation';
+           user_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.UserAnnotation';
            currentUserAnnotation user_annotation%ROWTYPE;
            currentAlgoAnnotation algo_annotation%ROWTYPE;
         BEGIN
@@ -724,8 +724,8 @@ class TriggerService {
         CREATE OR REPLACE FUNCTION afterDeleteReviewedAnnotation() RETURNS trigger as \$incAnnRevAnn\$
         DECLARE
            current_class reviewed_annotation.parent_class_name%TYPE;
-           algo_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.AlgoAnnotation';
-           user_class reviewed_annotation.parent_class_name%TYPE := 'be.cytomine.ontology.UserAnnotation';
+           algo_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.AlgoAnnotation';
+           user_class reviewed_annotation.parent_class_name%TYPE := 'cytomine.core.ontology.UserAnnotation';
         BEGIN
             UPDATE image_instance
             SET count_image_reviewed_annotations = count_image_reviewed_annotations - 1

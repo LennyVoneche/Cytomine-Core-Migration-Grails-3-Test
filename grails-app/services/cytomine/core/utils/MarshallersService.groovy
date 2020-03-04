@@ -16,12 +16,12 @@ package cytomine.core.utils
 * limitations under the License.
 */
 
-//import be.cytomine.image.NestedImageInstance
-//import be.cytomine.processing.JobTemplate
-//import be.cytomine.security.User
-//import be.cytomine.security.UserJob
-//import be.cytomine.social.LastUserPosition
-//import be.cytomine.social.PersistentUserPosition
+import cytomine.core.image.NestedImageInstance
+import cytomine.core.processing.JobTemplate
+import cytomine.core.security.User
+import cytomine.core.security.UserJob
+import cytomine.core.social.LastUserPosition
+import cytomine.core.social.PersistentUserPosition
 import grails.converters.JSON
 
 /**
@@ -55,24 +55,24 @@ class MarshallersService {
             }
         }
         //if ImageInstance.registerMarshaller is call after NestedImageInstance..registerMarshaller, it override it
-//        JSON.registerObjectMarshaller(NestedImageInstance) { it ->
-//            return NestedImageInstance.getDataFromDomain(it)
-//        }
-//        JSON.registerObjectMarshaller(User) { it ->
-//            return User.getDataFromDomain(it)
-//        }
-//        JSON.registerObjectMarshaller(UserJob) { it ->
-//            return UserJob.getDataFromDomain(it)
-//        }
-//        JSON.registerObjectMarshaller(JobTemplate) { it ->
-//            return JobTemplate.getDataFromDomain(it)
-//        }
-//        JSON.registerObjectMarshaller(PersistentUserPosition) { it ->
-//            return PersistentUserPosition.getDataFromDomain(it)
-//        }
-//        JSON.registerObjectMarshaller(LastUserPosition) { it ->
-//            return LastUserPosition.getDataFromDomain(it)
-//        }
+        JSON.registerObjectMarshaller(NestedImageInstance) { it ->
+            return NestedImageInstance.getDataFromDomain(it)
+        }
+        JSON.registerObjectMarshaller(User) { it ->
+            return User.getDataFromDomain(it)
+        }
+        JSON.registerObjectMarshaller(UserJob) { it ->
+            return UserJob.getDataFromDomain(it)
+        }
+        JSON.registerObjectMarshaller(JobTemplate) { it ->
+            return JobTemplate.getDataFromDomain(it)
+        }
+        JSON.registerObjectMarshaller(PersistentUserPosition) { it ->
+            return PersistentUserPosition.getDataFromDomain(it)
+        }
+        JSON.registerObjectMarshaller(LastUserPosition) { it ->
+            return LastUserPosition.getDataFromDomain(it)
+        }
 
     }
 }
