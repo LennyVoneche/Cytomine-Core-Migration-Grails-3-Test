@@ -1,0 +1,188 @@
+package cytomine.core.security
+
+/*
+* Copyright (c) 2009-2017. Authors: see NOTICE file.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+import cytomine.core.image.ImageInstance
+import cytomine.core.ontology.Property
+import cytomine.core.ontology.UserAnnotation
+import cytomine.core.project.Project
+import cytomine.core.test.BasicInstanceBuilder
+import cytomine.core.test.Infos
+import cytomine.core.test.http.*
+import cytomine.core.utils.SearchFilter
+import cytomine.core.utils.SearchOperator
+import grails.converters.JSON
+
+
+class SearchSecurityTests extends SecurityTestsAbstract {
+
+    void testSearchSecurityForCytomineAdmin() {
+        //Get user1
+        User user1 = BasicInstanceBuilder.getUser(USERNAME1,PASSWORD1)
+
+        //Get admin user
+        User admin = BasicInstanceBuilder.getSuperAdmin(USERNAMEADMIN,PASSWORDADMIN)
+
+        //Create project with user 1
+        ImageInstance image = ImageInstanceAPI.buildBasicImage(SecurityTestsAbstract.USERNAME1, SecurityTestsAbstract.PASSWORD1)
+        Project project = image.project
+
+        //Add annotation with cytomine admin
+        UserAnnotation annotation = BasicInstanceBuilder.getUserAnnotationNotExist()
+        annotation.image = image
+        annotation.project = project
+        def result = UserAnnotationAPI.create(annotation.encodeAsJSON(), SecurityTestsAbstract.USERNAMEADMIN, SecurityTestsAbstract.PASSWORDADMIN)
+        assert 200 == result.code
+
+        //Annotation
+        Property annotationPropertyToAdd1 = BasicInstanceBuilder.getAnnotationPropertyNotExist(result.data)
+        Property annotationPropertyToAdd2 = BasicInstanceBuilder.getAnnotationPropertyNotExist(result.data)
+        annotationPropertyToAdd1.value = "Poney"
+        annotationPropertyToAdd2.value = "Cheval"
+
+        result = PropertyAPI.create(annotationPropertyToAdd1.domainIdent, "annotation" ,annotationPropertyToAdd1.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property annotationProperty1 = result.data
+
+        result = PropertyAPI.create(annotationPropertyToAdd2.domainIdent, "annotation" ,annotationPropertyToAdd2.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property annotationProperty2 = result.data
+
+        //Image
+        Property imagePropertyToAdd = BasicInstanceBuilder.getImageInstancePropertyNotExist()
+        imagePropertyToAdd.value = "Cheval"
+        imagePropertyToAdd.domain = image
+        result = PropertyAPI.create(imagePropertyToAdd.domainIdent, "imageinstance" ,imagePropertyToAdd.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property imageProperty = result.data
+
+        //Project
+        Property projectPropertyToAdd = BasicInstanceBuilder.getProjectPropertyNotExist()
+        projectPropertyToAdd.value = "Poney"
+        projectPropertyToAdd.domain = project
+        result = PropertyAPI.create(projectPropertyToAdd.domainIdent, "project" ,projectPropertyToAdd.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property projectProperty = result.data
+
+        result = SearchAPI.listDomain("Cheval,Poney", SearchOperator.OR, SearchFilter.ALL, USERNAMEADMIN, PASSWORDADMIN)
+        assert (200 == result.code)
+        assert (true == SearchAPI.containsInJSONList(annotationProperty1.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(annotationProperty2.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(imageProperty.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(projectProperty.domainIdent, JSON.parse(result.data)))
+
+        result = SearchAPI.listDomain("Cheval,Poney", SearchOperator.AND, SearchFilter.ALL, USERNAMEADMIN, PASSWORDADMIN)
+        assert (200 == result.code)
+        assert (true == SearchAPI.containsInJSONList(annotationProperty1.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(annotationProperty2.domainIdent, JSON.parse(result.data)))
+        assert (false == SearchAPI.containsInJSONList(imageProperty.domainIdent, JSON.parse(result.data)))
+        assert (false == SearchAPI.containsInJSONList(projectProperty.domainIdent, JSON.parse(result.data)))
+
+    }
+
+    void testSearchSecurityForSimpleUser() {
+        //Get user1
+        User user1 = BasicInstanceBuilder.getUser(USERNAME1,PASSWORD1)
+        //Get user2
+        User user2 = BasicInstanceBuilder.getUser(USERNAME2,PASSWORD2)
+
+        //Create project with user 1
+        ImageInstance image = ImageInstanceAPI.buildBasicImage(SecurityTestsAbstract.USERNAME1, SecurityTestsAbstract.PASSWORD1)
+        Project project = image.project
+
+        //Add annotation with cytomine admin
+        UserAnnotation annotation = BasicInstanceBuilder.getUserAnnotationNotExist()
+        annotation.image = image
+        annotation.project = project
+        def result = UserAnnotationAPI.create(annotation.encodeAsJSON(), SecurityTestsAbstract.USERNAME1, SecurityTestsAbstract.PASSWORD1)
+        assert 200 == result.code
+
+        //Annotation
+        Property annotationPropertyToAdd1 = BasicInstanceBuilder.getAnnotationPropertyNotExist(result.data)
+        Property annotationPropertyToAdd2 = BasicInstanceBuilder.getAnnotationPropertyNotExist(result.data)
+        annotationPropertyToAdd1.value = "Poney"
+        annotationPropertyToAdd2.value = "Cheval"
+
+        result = PropertyAPI.create(annotationPropertyToAdd1.domainIdent, "annotation" ,annotationPropertyToAdd1.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property annotationProperty1 = result.data
+
+        result = PropertyAPI.create(annotationPropertyToAdd2.domainIdent, "annotation" ,annotationPropertyToAdd2.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property annotationProperty2 = result.data
+
+        //Image
+        Property imagePropertyToAdd = BasicInstanceBuilder.getImageInstancePropertyNotExist()
+        imagePropertyToAdd.value = "Cheval"
+        imagePropertyToAdd.domain = image
+        result = PropertyAPI.create(imagePropertyToAdd.domainIdent, "imageinstance" ,imagePropertyToAdd.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property imageProperty = result.data
+
+        //Project
+        Property projectPropertyToAdd = BasicInstanceBuilder.getProjectPropertyNotExist()
+        projectPropertyToAdd.value = "Poney"
+        projectPropertyToAdd.domain = project
+        result = PropertyAPI.create(projectPropertyToAdd.domainIdent, "project" ,projectPropertyToAdd.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property projectProperty = result.data
+
+
+        result = SearchAPI.listDomain("Cheval,Poney", SearchOperator.OR, SearchFilter.ALL, USERNAME1, PASSWORD1)
+        assert (200 == result.code)
+        assert (true == SearchAPI.containsInJSONList(annotationProperty1.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(annotationProperty2.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(imageProperty.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(projectProperty.domainIdent, JSON.parse(result.data)))
+
+        result = SearchAPI.listDomain("Cheval,Poney", SearchOperator.AND, SearchFilter.ALL, USERNAME1, PASSWORD1)
+        assert (200 == result.code)
+        assert (true == SearchAPI.containsInJSONList(annotationProperty1.domainIdent, JSON.parse(result.data)))
+        assert (true == SearchAPI.containsInJSONList(annotationProperty2.domainIdent, JSON.parse(result.data)))
+        assert (false == SearchAPI.containsInJSONList(imageProperty.domainIdent, JSON.parse(result.data)))
+        assert (false == SearchAPI.containsInJSONList(projectProperty.domainIdent, JSON.parse(result.data)))
+
+        result = SearchAPI.listDomain("Cheval,Poney", SearchOperator.OR, SearchFilter.ALL, USERNAME2, PASSWORD2)
+        assert (200 == result.code)
+        assert (false == SearchAPI.containsInJSONList(annotationProperty1.domainIdent, JSON.parse(result.data)))
+        assert (false == SearchAPI.containsInJSONList(annotationProperty2.domainIdent, JSON.parse(result.data)))
+        assert (false == SearchAPI.containsInJSONList(imageProperty.domainIdent, JSON.parse(result.data)))
+        assert (false == SearchAPI.containsInJSONList(projectProperty.domainIdent, JSON.parse(result.data)))
+
+    }
+
+    void testSearchSecurityForAnonymous() {
+        //Get user1
+        User user1 = BasicInstanceBuilder.getUser(USERNAME1,PASSWORD1)
+
+        def project = BasicInstanceBuilder.getProjectNotExist()
+        Infos.addUserRight(USERNAME1,project)
+
+        def result = ProjectAPI.create(project.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+
+        def projectPropertyToAdd = BasicInstanceBuilder.getProjectPropertyNotExist()
+        projectPropertyToAdd.value = "Poney"
+        projectPropertyToAdd.domain = result.data
+        result = PropertyAPI.create(projectPropertyToAdd.domainIdent, "project", projectPropertyToAdd.encodeAsJSON(),USERNAME1,PASSWORD1)
+        assert 200 == result.code
+        Property projectProperty = result.data
+
+        //check if user 2 cannot access/update/delete
+        assert (401 == SearchAPI.listDomain(projectProperty.value, SearchOperator.OR, SearchFilter.PROJECT ,USERNAMEBAD, PASSWORDBAD).code)
+    }
+}

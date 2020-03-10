@@ -5,19 +5,22 @@ grails:
         defaultPackage: cytomine.core
     spring:
         transactionManagement:
-            proxies: false
+            proxies: true
+
 info:
     app:
         name: '@info.app.name@'
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
+        #Cytomine Version
+        cytomineVersion: 20190222
 spring:
     groovy:
         template:
             check-template-location: false
 # Spring Actuator Endpoints are Disabled by Default
 endpoints:
-    enabled: false
+    enabled: true
     jmx:
         enabled: true
 
@@ -45,6 +48,7 @@ grails:
             json:
               - application/json
               - text/json
+            jsonp: application/javascript
             multipartForm: multipart/form-data
             pdf: application/pdf
             rss: application/rss+xml
@@ -55,6 +59,14 @@ grails:
             xml:
               - text/xml
               - application/xml
+            png: image/png
+            jpg: image/jpeg
+        file:
+            extensions: true
+        use:
+            accept:
+                header: false
+
     urlmapping:
         cache:
             maxsize: 1000
@@ -62,17 +74,41 @@ grails:
         defaultScope: singleton
     converters:
         encoding: UTF-8
+        json :
+            default:
+                deep: false
     views:
         default:
-            codec: html
+            codec: none
         gsp:
             encoding: UTF-8
             htmlcodec: xml
+            sitemesh :
+                preprocess : true
             codecs:
                 expression: html
                 scriptlets: html
                 taglib: none
                 staticparts: none
+    project:
+        groupId : appName
+    databinding:
+        convertEmptyStringsToNull: false
+
+    scaffolding:
+        templates:
+            domainSuffix: Instance
+    json:
+        legacy:
+            builder: true
+    enable:
+        native2ascii: true
+    logging:
+        jul:userbridge: true
+    spring:
+        bean:
+            packages: []
+
 endpoints:
     jmx:
         unique-names: true
@@ -83,43 +119,161 @@ hibernate:
         queries: false
         use_second_level_cache: true
         use_query_cache: false
-        region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+        region:
+            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+    singleSession: true
 
 dataSource:
     pooled: true
-    jmxExport: true
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
+
 
 environments:
     development:
         dataSource:
-            dbCreate: create-drop
-            url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-    test:
-        dataSource:
             dbCreate: update
-            url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-    production:
-        dataSource:
-            dbCreate: none
-            url: jdbc:h2:./prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+            url: jdbc:postgresql://localhost:5432/docker
+            username: docker
+            password: docker
             properties:
                 jmxEnabled: true
-                initialSize: 5
-                maxActive: 50
-                minIdle: 5
-                maxIdle: 25
-                maxWait: 10000
-                maxAge: 600000
+                initialSize: 10
+                maxActive: 500
+                minIdle: 10
+                maxIdle: 500
+                maxWait: 30000
+                maxAge: 300000
                 timeBetweenEvictionRunsMillis: 5000
                 minEvictableIdleTimeMillis: 60000
-                validationQuery: SELECT 1
-                validationQueryTimeout: 3
-                validationInterval: 15000
-                testOnBorrow: true
-                testWhileIdle: true
-                testOnReturn: false
-                jdbcInterceptors: ConnectionState
-                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+
+grails:
+    mongo:
+        host: localhost
+        port: 27017
+        databaseName: cytomine
+        options:
+            connectionsPerHost: 10
+            threadsAllowedToBlockForConnectionMultiplier: 5
+
+---
+cytomine:
+    customUI:
+        global:
+            - dashboard:
+                - ALL
+            - search:
+                - ROLE_ADMIN
+            - project:
+                - ALL
+            - ontology:
+                - ROLE_ADMIN
+            - storage:
+                - ROLE_USER
+                - ROLE_ADMIN
+            - software:
+                - ROLE_USER
+                - ROLE_ADMIN
+            - activity:
+                -  ALL
+            - explore:
+                - ROLE_USER
+                - ROLE_ADMIN
+            - admin:
+                - ROLE_ADMIN
+            - help:
+                - ALL
+        project:
+            - project-annotations-tab:
+                - ADMIN_PROJECT: true
+                - CONTRIBUTOR_PROJECT: true
+            - project-images-tab:
+                - ADMIN_PROJECT: true
+                - CONTRIBUTOR_PROJECT: true
+            - project-imagegroups-tab:
+                - ADMIN_PROJECT: false
+                - CONTRIBUTOR_PROJECT: false
+            - project-properties-tab:
+                - ADMIN_PROJECT: true
+                - CONTRIBUTOR_PROJECT: true
+            - project-jobs-tab:
+                - ADMIN_PROJECT: false
+                - CONTRIBUTOR_PROJECT: false
+            - project-configuration-tab:
+                - ADMIN_PROJECT: true
+                - CONTRIBUTOR_PROJECT: false
+            - roject-usersconfiguration-tab:
+                - ADMIN_PROJECT: true
+                - CONTRIBUTOR_PROJECT: false
+            - project-explore-spectra-panel:
+                - ADMIN_PROJECT: false
+                - CONTRIBUTOR_PROJECT: false
+    software:
+        path:
+            softwareImages: /data/softwares/images
+    storage_path: '/data/images' #default path for image locations
+    fast_data_path: '/data/images' #default path for HDF5 files location (for ex: a SSD)
+    middleware:
+        rabbitmq:
+            user: router
+            password: router
+    annotation:
+        maxNumberOfPoint: 200
+    maxRequestSize: 10485760
+    jobdata:
+        filesystem: false
+        filesystemPath: algo/data/
+
+grails:
+    admin:
+        email: info@cytomine.org
+    notification:
+        email: 'undefined'
+        password: 'undefined'
+        smtp:
+            host: smtp.gmail.com
+            port: 587
+    client: NO
+    messageBrokerServerURL: rabbitmq:5672
+    LTIConsumer: []
+    readOnlyProjectsByDefault: false
+    retrieval:
+        enabled: true
+    software:
+        enabled: true
+
+    serverURL: http://localhost-core
+    uploadURL: http://localhost-upload
+    imageServerURL:
+        - http://localhost-ims
+    retrievalServerURL:
+        - http://localhost-retrieval
+    plugin:
+        springsecurity:
+            useBasicAuth: false
+    ressources:
+        adhoc:
+            patterns:
+                - /images/*
+                - /js/*
+                - /css/jsondoc/*
+        processing:
+            enabled: false
+    converters:
+        default:
+            pretty:
+                print: true
+    retrievalUsername: cytomine
+    retrievalPassword: retrieval_default
+    adminPassword: admin
+    ImageServerPrivateKey: ABC
+    ImageServerPublicKey: DEF
+    adminPrivateKey: GHI
+    adminPublicKey: JKL
+    superAdminPrivateKey: MNO
+    superAdminPublicKey: POR
+    rabbitMQPrivateKey: STU
+    rabbitMQPublicKey: VWX
+
+

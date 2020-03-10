@@ -1,0 +1,141 @@
+package cytomine.core
+
+/*
+* Copyright (c) 2009-2017. Authors: see NOTICE file.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+import cytomine.core.security.User
+import cytomine.core.test.BasicInstanceBuilder
+import cytomine.core.test.Infos
+import cytomine.core.test.http.SearchEngineFilterAPI
+import cytomine.core.utils.JSONUtils
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONArray
+import org.codehaus.groovy.grails.web.json.JSONObject
+
+/**
+ * User: rhoyoux
+ * Date: 30/10/14
+ * Time: 10:55
+ */
+class SearchEngineFilterTests {
+
+    void testListAllSearchEngineFilterWithCredential() {
+        def result = SearchEngineFilterAPI.listAll(Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 200 == result.code
+        def json = JSON.parse(result.data)
+        assert json.collection instanceof JSONArray
+    }
+
+    void testListAllSearchEngineFilterWithoutCredential() {
+        def result = SearchEngineFilterAPI.listAll(Infos.BADLOGIN, Infos.BADPASSWORD)
+        assert 401 == result.code
+    }
+
+    void testShowSearchEngineFilterWithCredential() {
+        def result = SearchEngineFilterAPI.show(BasicInstanceBuilder.getSearchEngineFilter().id, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 200 == result.code
+        def json = JSON.parse(result.data)
+        assert json instanceof JSONObject
+    }
+
+    void testAddSearchEngineFilterCorrect() {
+        def filterToAdd = BasicInstanceBuilder.getSearchEngineFilterNotExist()
+        log.info(JSON.parse(filterToAdd.filters).words)
+        User user = BasicInstanceBuilder.getUser()
+
+        def result = SearchEngineFilterAPI.create(filterToAdd.encodeAsJSON(), Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 200 == result.code
+        int idFilter = result.data.id
+
+        result = SearchEngineFilterAPI.show(idFilter, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 200 == result.code
+
+        result = SearchEngineFilterAPI.undo()
+        assert 200 == result.code
+
+        result = SearchEngineFilterAPI.show(idFilter, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 404 == result.code
+
+        result = SearchEngineFilterAPI.redo()
+        assert 200 == result.code
+
+        result = SearchEngineFilterAPI.show(idFilter, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 200 == result.code
+    }
+
+    void testAddSearchEngineFilterIncorrect() {
+        def filterToAdd = BasicInstanceBuilder.getSearchEngineFilterNotExist()
+        JSONObject filters = JSON.parse(filterToAdd.filters)
+        def words =  JSONUtils.getJSONList(JSONUtils.getJSONAttrStr(filters, "words", false))
+        log.info("filter words " + words)
+        words.each { it -> log.info(it)}
+
+        filters.put("words", [] as JSON)
+        filterToAdd.name = filterToAdd.name+2
+        filterToAdd.filters = filters.toString()
+        log.info("filter name " + filterToAdd.name)
+        log.info("filter filters " + filterToAdd.filters)
+
+        User user = BasicInstanceBuilder.getUser()
+        def result = SearchEngineFilterAPI.create(filterToAdd.encodeAsJSON(), Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 400 == result.code // cannot search with no words
+
+        filters.put("projects", [64] as JSON)
+        filterToAdd.name = filterToAdd.name+2
+        filterToAdd.filters = filters.toString()
+        log.info("filter name " + filterToAdd.name)
+        log.info("filter filters " + filterToAdd.filters)
+
+        result = SearchEngineFilterAPI.create(filterToAdd.encodeAsJSON(), Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 400 == result.code // cannot search non existing project
+    }
+
+    void testAddSearchEngineFilterAlreadyExist() {
+        def filterToAdd = BasicInstanceBuilder.getSearchEngineFilter()
+        User user = BasicInstanceBuilder.getUser()
+        def result = SearchEngineFilterAPI.create(filterToAdd.encodeAsJSON(), Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 409 == result.code
+    }
+
+    void testDeleteSearchEngineFilter() {
+        def filterToDelete = BasicInstanceBuilder.getSearchEngineFilterNotExist()
+        assert filterToDelete.save(flush: true)!= null
+        def id = filterToDelete.id
+        def result = SearchEngineFilterAPI.delete(id, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 200 == result.code
+
+        def showResult = SearchEngineFilterAPI.show(id, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 404 == showResult.code
+
+        result = SearchEngineFilterAPI.undo()
+        assert 200 == result.code
+
+        result = SearchEngineFilterAPI.show(id, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 200 == result.code
+
+        result = SearchEngineFilterAPI.redo()
+        assert 200 == result.code
+
+        result = SearchEngineFilterAPI.show(id, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 404 == result.code
+    }
+
+    void testDeleteSearchEngineFilterNotExist() {
+        def result = SearchEngineFilterAPI.delete(-99, Infos.SUPERADMINLOGIN, Infos.SUPERADMINPASSWORD)
+        assert 404 == result.code
+    }
+
+}

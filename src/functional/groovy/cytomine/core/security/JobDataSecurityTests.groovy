@@ -1,0 +1,134 @@
+package cytomine.core.security
+
+/*
+* Copyright (c) 2009-2017. Authors: see NOTICE file.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+import cytomine.core.processing.JobData
+import cytomine.core.project.Project
+import cytomine.core.test.BasicInstanceBuilder
+import cytomine.core.test.Infos
+import cytomine.core.test.http.JobDataAPI
+import cytomine.core.test.http.ProjectAPI
+import grails.converters.JSON
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: lrollus
+ * Date: 2/03/11
+ * Time: 11:08
+ * To change this template use File | Settings | File Templates.
+ */
+class JobDataSecurityTests extends SecurityTestsAbstract{
+
+
+  void testJobDataSecurityForCytomineAdmin() {
+
+      //Get user1
+      User user1 = getUser1()
+
+      //Get admin user
+      User admin = getUserAdmin()
+
+      //Create new project (user1)
+      def result = ProjectAPI.create(BasicInstanceBuilder.getProjectNotExist().encodeAsJSON(),SecurityTestsAbstract.USERNAME1,SecurityTestsAbstract.PASSWORD1)
+      assert 200 == result.code
+      Project project = result.data
+
+      //Add jobData instance to project
+      JobData jobData = BasicInstanceBuilder.getJobDataNotExist()
+      jobData.job.project = project
+
+      //check if admin user can access/update/delete
+      result = JobDataAPI.create(jobData.encodeAsJSON(),SecurityTestsAbstract.USERNAMEADMIN,SecurityTestsAbstract.PASSWORDADMIN)
+      assert 200 == result.code
+      jobData = result.data
+      assert (200 == JobDataAPI.show(jobData.id,SecurityTestsAbstract.USERNAMEADMIN,SecurityTestsAbstract.PASSWORDADMIN).code)
+      result = JobDataAPI.listByJob(jobData.job.id,SecurityTestsAbstract.USERNAMEADMIN,SecurityTestsAbstract.PASSWORDADMIN)
+      assert 200 == result.code
+      assert (true ==JobDataAPI.containsInJSONList(jobData.id,JSON.parse(result.data)))
+      assert (200 == JobDataAPI.update(jobData.id,jobData.encodeAsJSON(),SecurityTestsAbstract.USERNAMEADMIN,SecurityTestsAbstract.PASSWORDADMIN).code)
+      assert (200 == JobDataAPI.delete(jobData.id,SecurityTestsAbstract.USERNAMEADMIN,SecurityTestsAbstract.PASSWORDADMIN).code)
+  }
+
+  void testJobDataSecurityForProjectUser() {
+
+      //Get user1
+      User user1 = getUser1()
+      User user2 = getUser2()
+
+      //Get admin user
+      User admin = getUserAdmin()
+
+      //Create new project (user1)
+      def result = ProjectAPI.create(BasicInstanceBuilder.getProjectNotExist().encodeAsJSON(),SecurityTestsAbstract.USERNAME1,SecurityTestsAbstract.PASSWORD1)
+      assert 200 == result.code
+      Project project = result.data
+
+      //add right to user 2
+      def resAddUser = ProjectAPI.addUserProject(project.id,user2.id,SecurityTestsAbstract.USERNAME1,SecurityTestsAbstract.PASSWORD1)
+      Infos.printRight(project)
+      assert 200 == resAddUser.code
+
+      //Add jobData instance to project
+      JobData jobData = BasicInstanceBuilder.getJobDataNotExist()
+      jobData.job.project = project
+      jobData.job.save(flush: true)
+      //check if user 2 can access/update/delete
+      result = JobDataAPI.create(jobData.encodeAsJSON(),SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2)
+      assert 200 == result.code
+      jobData = result.data
+      assert (200 == JobDataAPI.show(jobData.id,SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2).code)
+      result = JobDataAPI.listByJob(jobData.job.id,SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2)
+      assert 200 == result.code
+      assert (true ==JobDataAPI.containsInJSONList(jobData.id,JSON.parse(result.data)))
+      //assert (200 == JobDataAPI.update(jobData,USERNAME2,PASSWORD2).code)
+      assert (200 == JobDataAPI.delete(jobData.id,SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2).code)
+  }
+
+  void testJobDataSecurityForSimpleUser() {
+
+      //Get user1
+      User user1 = getUser1()
+      User user2 = getUser2()
+
+      //Get admin user
+      User admin = getUserAdmin()
+
+      //Create new project (user1)
+      def result = ProjectAPI.create(BasicInstanceBuilder.getProjectNotExist().encodeAsJSON(),SecurityTestsAbstract.USERNAME1,SecurityTestsAbstract.PASSWORD1)
+      assert 200 == result.code
+      Project project = result.data
+
+      //Add jobData instance to project
+      JobData jobData = BasicInstanceBuilder.getJobDataNotExist()
+      jobData.job.project = project
+
+      //check if simple user can access/update/delete
+      result = JobDataAPI.create(jobData.encodeAsJSON(),SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2)
+      assert (403 == result.code)
+      jobData = result.data
+
+      jobData = BasicInstanceBuilder.getJobData()
+      jobData.job.project = project
+      jobData.job.save(flush:true)
+
+      assert (403 == JobDataAPI.show(jobData.id,SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2).code)
+      assert (403 ==JobDataAPI.listByJob(jobData.job.id,SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2).code)
+      //assert (403 == JobDataAPI.update(jobData,USERNAME2,PASSWORD2).code)
+      assert (403 == JobDataAPI.delete(jobData.id,SecurityTestsAbstract.USERNAME2,SecurityTestsAbstract.PASSWORD2).code)
+  }
+
+}

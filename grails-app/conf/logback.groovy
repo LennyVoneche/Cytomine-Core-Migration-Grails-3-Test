@@ -1,5 +1,4 @@
 import grails.util.BuildSettings
-import grails.util.Environment
 
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
 appender('STDOUT', ConsoleAppender) {
@@ -7,9 +6,21 @@ appender('STDOUT', ConsoleAppender) {
         pattern = "%level %logger - %msg%n"
     }
 }
+//
+logger'grails.app.init', INFO
+//logger'grails.app.init', DEBUG
+
+logger'grails.app.domain', INFO
+//logger'grails.app.domain', DEBUG
+
+logger'grails.app.services', INFO
+//logger'grails.app.services', DEBUG
+logger'grails.app.controllers', INFO
+//logger'grails.app.controllers', DEBUG
+logger'grails.app.utils', INFO
 
 def targetDir = BuildSettings.TARGET_DIR
-if (Environment.isDevelopmentMode() && targetDir != null) {
+if (targetDir != null) {
     appender("FULL_STACKTRACE", FileAppender) {
         file = "${targetDir}/stacktrace.log"
         append = true

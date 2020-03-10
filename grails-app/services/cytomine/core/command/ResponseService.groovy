@@ -1,0 +1,79 @@
+package cytomine.core.command
+
+/*
+* Copyright (c) 2009-2017. Authors: see NOTICE file.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+import cytomine.core.utils.JSONUtils
+import grails.converters.JSON
+import grails.transaction.Transactional
+
+@Transactional
+class ResponseService {
+
+    static transactional = true
+
+    def messageSource
+
+    /**
+     * Create response message structure for a command result
+     * E.g. if we try to add a new annotation "object"
+     * @param object Object updated (add/edit/delete) by command  (e.g. annotation x)
+     * @param messageParams Params for i18n message (e.g. annotation id, annotation image id)
+     * @param printMessage Flag for client, indicate if client must print or not a confirmation message
+     * @param commandType Command type: add, edit or delete
+     * @param additionalCallbackParams (optional): call back to append in response for client (e.g. image id as callback, to refresh image view in web UI client)
+     * @return Response stucture
+     */
+    public def createResponseMessage(def object, def messageParams, boolean printMessage, String commandType, HashMap<String, Object> additionalCallbackParams = null) {
+        String objectName = getClassName(object)
+        String command = "cytomine.core." + commandType + objectName + "Command"
+        String idName = objectName.toLowerCase() + "ID" //termID, annotationID,...
+        String id = object.id
+        HashMap<String, Object> paramsCallback = new HashMap<String, Object>()
+        paramsCallback.put('method', command)
+        paramsCallback.put(idName, id)
+        if (additionalCallbackParams) {
+            paramsCallback.putAll(additionalCallbackParams)
+        }
+
+        //load message from i18n filel
+        def message = messageSource.getMessage(command, messageParams as Object[], Locale.ENGLISH)
+
+        HashMap<String, Object> params = new HashMap<String, Object>()
+        params.put('message', message)
+        params.put('callback', paramsCallback)
+        params.put('printMessage', printMessage)
+        params.put(objectName.toLowerCase(), JSON.parse(JSONUtils.toJSONString(object)))     //Project.getDataFromDomain(object)
+
+        return [data: params, status: 200, object:object]
+    }
+
+    /**
+     * Get the class name of an object without package name
+     * @param o Object
+     * @return Class name (without package) of o
+     */
+    public static String getClassName(Object o) {
+        String name = o.getClass().name   //cytomine.core.image.Image
+        int exeed = name.indexOf("_\$\$_javassist") //if  cytomine.core.image.Image_$$_javassistxxxx...remove all after  _$$
+        if (exeed!=-1) {
+            name = name.substring(0,exeed)
+        }
+        String[] array = name.split("\\.")  //[be,cytomine,image,Image]
+        //log.info array.length
+        return array[array.length - 1] // Image
+    }
+}
