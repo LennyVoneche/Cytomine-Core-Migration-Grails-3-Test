@@ -1,5 +1,6 @@
 package cytomine.core.utils.database
 
+import grails.util.Metadata
 import org.postgresql.util.PSQLException
 
 /*
@@ -37,16 +38,23 @@ class SequenceService {
         log.info 'initSequences method '
         sessionFactory.getCurrentSession().clear();
         def connection = sessionFactory.currentSession.connection()
+        print getClass().getName() + ' initSequences : ' + '001' + '\n'
 
         try {
             def statement = connection.createStatement()
             def dropSequenceQuery = ""//"DROP SEQUENCE IF EXISTS "+SEQ_NAME+";"
             def createSequenceQuery = "CREATE SEQUENCE " + SEQ_NAME + " START 1;"
             statement.execute(dropSequenceQuery + createSequenceQuery)
+            print getClass().getName() + ' initSequences : ' + '002' + '\n'
+
         } catch (PSQLException e) {
             log.debug e.toString()
-        }
+            print getClass().getName() + ' initSequences : ' + '002.1' + '\n'
+            print getClass().getName() + ' initSequences : ' + e.toString() + '\n'
+            print getClass().getName() + ' initSequences : ' + '002.1' + '\n'
 
+        }
+        print getClass().getName() + ' initSequences : ' + '003' + '\n'
     }
 
     /**

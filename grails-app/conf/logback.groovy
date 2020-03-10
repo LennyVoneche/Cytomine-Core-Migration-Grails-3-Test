@@ -17,6 +17,7 @@ logger'grails.app.services', INFO
 //logger'grails.app.services', DEBUG
 logger'grails.app.controllers', INFO
 //logger'grails.app.controllers', DEBUG
+logger'grails.app.utils', INFO
 
 def targetDir = BuildSettings.TARGET_DIR
 if (targetDir != null) {

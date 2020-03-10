@@ -17,6 +17,10 @@ package cytomine.core.security
 */
 
 import cytomine.core.CytomineDomain
+import cytomine.core.Exception.WrongArgumentException
+
+import javax.persistence.Transient
+
 //import cytomine.core.Exception.AlreadyExistException
 //import cytomine.core.Exception.WrongArgumentException
 ////import org.restapidoc.annotation.RestApiObject
@@ -36,6 +40,8 @@ class SecUser extends CytomineDomain implements Serializable {
 
 //    @RestApiObjectField(description = "The user password", presentInResponse = false)
     String password
+
+//    @Transient
     String newPassword = null
 
 //    @RestApiObjectField(description = "The user public key", mandatory = false, defaultValue = "A generated key")
@@ -60,12 +66,11 @@ class SecUser extends CytomineDomain implements Serializable {
 //    @RestApiObjectFields(params=[
 //            @RestApiObjectField(apiFieldName = "algo", description = "If true, user is a userjob",allowedType = "boolean",useForCreation = false)
 //    ])
-    static transients = ["newPassword", "currentTransaction", "nextTransaction"]
-
+//    static transients = ["newPassword", "currentTransaction", "nextTransaction"]
     static constraints = {
         username blank: false
         password blank: false
-        newPassword(nullable : true, blank : false)
+        newPassword(nullable : true, blank : true)
         publicKey nullable : true, blank : false, unique: true
         privateKey (nullable : true, blank : false)
         id unique: true
@@ -76,6 +81,8 @@ class SecUser extends CytomineDomain implements Serializable {
         id(generator: 'assigned', unique: true)
         sort "id"
         cache true
+        tablePerHierarchy true
+
     }
 
     /**
@@ -121,26 +128,26 @@ class SecUser extends CytomineDomain implements Serializable {
     /**
      * Get user roles
      */
-//    Set<SecRole> getAuthorities() {
-//        SecUserSecRole.findAllBySecUser(this).collect { it.secRole } as Set
-//    }
+    Set<SecRole> getAuthorities() {
+        SecUserSecRole.findAllBySecUser(this).collect { it.secRole } as Set
+    }
 
     /**
      * Check if user is a cytomine admin
      * Rem: a project admin is not a cytomine admin
      */
 
-//    boolean isAdminAuth() {
-//        return (SecUserSecRole.get(id,SecRole.findByAuthority("ROLE_ADMIN").id) != null)
-//    }
-//
-//    boolean isUserAuth() {
-//        return (SecUserSecRole.get(id,SecRole.findByAuthority("ROLE_USER").id) != null)
-//    }
-//
-//    boolean isGuestAuth() {
-//        return (SecUserSecRole.get(id,SecRole.findByAuthority("ROLE_GUEST").id) != null)
-//    }
+    boolean isAdminAuth() {
+        return (SecUserSecRole.get(id,SecRole.findByAuthority("ROLE_ADMIN").id) != null)
+    }
+
+    boolean isUserAuth() {
+        return (SecUserSecRole.get(id,SecRole.findByAuthority("ROLE_USER").id) != null)
+    }
+
+    boolean isGuestAuth() {
+        return (SecUserSecRole.get(id,SecRole.findByAuthority("ROLE_GUEST").id) != null)
+    }
 
     /**
      * Username of the human user back to this user
@@ -175,8 +182,8 @@ class SecUser extends CytomineDomain implements Serializable {
     protected void encodePassword() {
         log.info "encodePassword for user="+username
         if(password.size()<4)
-//            throw new WrongArgumentException("Your password must have at least 4 characters!")
-            print "Your password must have at least 4 characters!"
+            throw new WrongArgumentException("Your password must have at least 4 characters!")
+//            print "Your password must have at least 4 characters!"
 
         password = springSecurityService.encodePassword(password)
     }

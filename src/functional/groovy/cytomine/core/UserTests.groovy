@@ -22,7 +22,7 @@ import cytomine.core.test.BasicInstanceBuilder
 import cytomine.core.test.Infos
 import cytomine.core.test.http.JobAPI
 import cytomine.core.test.http.ProjectAPI
-import cytomine.core.test.http.UserAPI
+import cytomine.core.test.http.*
 import cytomine.core.utils.UpdateData
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
@@ -516,11 +516,11 @@ class UserTests  {
         assert !checkIfContains(UserAPI.listLayers(project.id,simpleUsername1,password),admin.id)
     }
 
-    static boolean checkIfContains(def result, def id) {
-        assert 200 == result.code
-        def json = JSON.parse(result.data)
-        return UserAPI.containsInJSONList(id,json)
-    }
+//    static boolean checkIfContains(def result, def id) {
+//        assert 200 == result.code
+//        def json = JSON.parse(result.data)
+//        return UserAPI.containsInJSONList(id,json)
+//    }
 
 
     void testAPIGetSignature() {

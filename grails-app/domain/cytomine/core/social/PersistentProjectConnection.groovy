@@ -19,6 +19,8 @@ package cytomine.core.social
 import cytomine.core.CytomineDomain
 import cytomine.core.project.Project
 import cytomine.core.security.SecUser
+import org.grails.datastore.gorm.GormEntity
+
 //import org.restapidoc.annotation.RestApiObject
 //import org.restapidoc.annotation.RestApiObjectField
 
@@ -27,7 +29,7 @@ import cytomine.core.security.SecUser
  * ex : User x connect to project y the 2013/01/01 at time y
  */
 //@RestApiObject(name = "Persistent project connection", description = "Each PersistentProjectConnection represents an user connection to a project.")
-class PersistentProjectConnection extends CytomineDomain implements Cloneable {
+class PersistentProjectConnection extends CytomineDomain implements Cloneable, GormEntity<PersistentProjectConnection> {
 
     static mapWith = "mongo"
 

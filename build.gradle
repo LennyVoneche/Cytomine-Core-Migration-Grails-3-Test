@@ -9,6 +9,8 @@ buildscript {
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.11.1"
         classpath "org.grails.plugins:hibernate5:6.0.2"
         classpath 'org.grails.plugins:database-migration:3.0.4'
+        classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
+
     }
 }
 
@@ -55,7 +57,6 @@ dependencies {
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
-
 //    compile 'org.grails.plugins:rabbitmq-native:3.5.1'
 //    compile 'org.springframework.security:spring-security-core:3.2.9.RELEASE'
 //    compile 'org.springframework.security:spring-security-web:3.2.9.RELEASE'
@@ -90,9 +91,13 @@ dependencies {
     compile group: 'org.hibernate', name: 'hibernate-spatial', version: '5.2.0.Final'
 
     runtime 'org.postgresql:postgresql:9.4-1206-jdbc4'
-    compile 'org.grails.plugins:database-migration:3.0.4'
+    compile 'org.grails.plugins:database-migration:3.1.0.RC1'
 
-    compile group: 'org.apache.lucene', name: 'lucene-core', version: '8.4.1'
+//    compile group: 'org.apache.lucene', name: 'lucene-core', version: '8.4.1'
+//    compile 'org.liquibase:liquibase-core:3.5.5'
+//    compile 'org.grails:grails-plugin-filters:3.0.12'
+//    compile "org.grails:grails-datastore-gorm-async:6.1.12.RELEASE"
+
 
 }
 

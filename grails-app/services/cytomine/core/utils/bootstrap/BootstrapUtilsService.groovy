@@ -56,9 +56,9 @@ class BootstrapUtilsService {
     def amqpQueueService
     def amqpQueueConfigService
     def rabbitConnectionService
-//    def storageService
-//    def processingServerService
-//    def configurationService
+    def storageService
+    def processingServerService
+    def configurationService
 
     public def createUsers(def usersSamples) {
         print getClass().getName() + ' createUsers : ' + '001' + '\n'
@@ -123,6 +123,7 @@ class BootstrapUtilsService {
                 try {
                     user.save(flush: true)
                 } catch(Exception e) {
+                    print getClass().getName() + ' createUsers : ' + '006.1' + '\n'
                     log.info e.toString()
                 }
                 log.info "Save ${user.username}..."
@@ -139,7 +140,7 @@ class BootstrapUtilsService {
             } else {
                 log.info("\n\n\n Errors in account boostrap for ${item.username}!\n\n\n")
                 user.errors.each {
-                    err -> log.info(err)
+                    err -> log.info err.toString()
                 }
             }
         }
@@ -232,6 +233,14 @@ class BootstrapUtilsService {
     def createConfigurations(){
         Configuration.Role adminRole = Configuration.Role.ADMIN
         Configuration.Role allUsers = Configuration.Role.ALL
+        print getClass().getName() + ' createConfigurations : ' + '001' + '\n'
+        print getClass().getName() + ' createConfigurations : ' + grailsApplication.config.grails.retrieval.enabled + '\n'
+        print getClass().getName() + ' createConfigurations : ' + grailsApplication.config.grails.admin.email + '\n'
+        print getClass().getName() + ' createConfigurations : ' + grailsApplication.config.grails.notification.email + '\n'
+        print getClass().getName() + ' createConfigurations : ' + grailsApplication.config.grails.notification.password + '\n'
+        print getClass().getName() + ' createConfigurations : ' + grailsApplication.config.grails.notification.smtp.host + '\n'
+        print getClass().getName() + ' createConfigurations : ' + grailsApplication.config.grails.notification.smtp.port + '\n'
+
 
         def configs = []
 
@@ -271,8 +280,8 @@ class BootstrapUtilsService {
             if (config.validate()) {
                 config.save()
             } else {
-                config.errors?.each {
-                    log.info it
+                config.errors.each {
+                    log.error it.toString()
                 }
             }
         }
@@ -664,12 +673,12 @@ class BootstrapUtilsService {
         });
     }
 
-//    public void cleanUpGorm() {
-//        def session = sessionFactory.currentSession
-//        session.flush()
-//        session.clear()
-//        propertyInstanceMap.get().clear()
-//    }
+    public void cleanUpGorm() {
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+        propertyInstanceMap.get().clear()
+    }
 
     void addDefaultProcessingServer() {
         log.info("Add the default processing server")

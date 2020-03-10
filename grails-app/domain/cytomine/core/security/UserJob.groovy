@@ -39,7 +39,7 @@ class UserJob extends SecUser {
     Job job
 
 //    @RestApiObjectField(description = "The rate succes of the job", useForCreation = false, defaultValue = "-1")
-    double rate = -1d
+    double rate = -1
 
 //    @RestApiObjectFields(params=[
 //        @RestApiObjectField(apiFieldName = "humanUsername", description = "The username of the user that launch this job",allowedType = "string",useForCreation = false)
@@ -47,9 +47,14 @@ class UserJob extends SecUser {
     static transients = []
 
     static constraints = {
-        job(nullable: true)
+        job nullable: true
+        rate nullable: true, blank:true
+        user nullable: true
     }
-
+//    static mapping = {
+//        id column: '`job_id`'
+//
+//    }
 
     def beforeInsert() {
         super.beforeInsert()

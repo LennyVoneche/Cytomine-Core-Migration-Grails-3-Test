@@ -323,12 +323,12 @@ abstract class ModelService {
     /**
      * Clean GORM cache
      */
-//     void cleanUpGorm() {
-//        propertyInstanceMap.get().clear()
-//        def session = sessionFactory.currentSession
-//        session.flush()
-//        session.clear()
-//    }
+     void cleanUpGorm() {
+        propertyInstanceMap.get().clear()
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+    }
 
 
     /**

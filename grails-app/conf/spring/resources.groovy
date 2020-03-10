@@ -17,35 +17,34 @@ package spring
 
 
 import cytomine.core.ldap.CustomUserContextMapper
+import cytomine.core.LogoutEventListener
 import cytomine.core.security.CASLdapUserDetailsService
 import cytomine.core.security.SimpleUserDetailsService
-import cytomine.core.web.CytomineMultipartHttpServletRequest
+//import cytomine.core.web.CytomineMultipartHttpServletRequest
 import cytomine.web.APIAuthentificationFilters
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.springframework.aop.scope.ScopedProxyFactoryBean
 import org.springframework.cache.ehcache.EhCacheFactoryBean
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator
 import org.springframework.security.ldap.userdetails.LdapUserDetailsService
 
-//import grails.plugin.springsecurity.SpringSecurityUtils
 // Place your Spring DSL code here
 beans = {
-//    (LogoutEventListener)
+    LogoutEventListener
 
-    'apiAuthentificationFilter'(APIAuthentificationFilters) {
+    apiAuthentificationFilter(APIAuthentificationFilters) {
         // properties
     }
     print getClass().getName() + ' : ' + '001' + '\n'
-    'multipartResolver'(CytomineMultipartHttpServletRequest) {
-        // Max in memory 100kbytes
-        maxInMemorySize=10240
-
-        //100Gb Max upload size
-        maxUploadSize=102400000000
-
-
-    }
+//    'multipartResolver'(CytomineMultipartHttpServletRequest) {
+//        // Max in memory 100kbytes
+//        maxInMemorySize=10240
+//
+//        //100Gb Max upload size
+//        maxUploadSize=102400000000
+//    }
     print getClass().getName() + ' : ' + '002' + '\n'
 
     springConfig.addAlias "springSecurityService", "springSecurityCoreSpringSecurityService"
@@ -54,9 +53,11 @@ beans = {
     def config = SpringSecurityUtils.securityConfig
     SpringSecurityUtils.loadSecondaryConfig 'DefaultLdapSecurityConfig'
     config = SpringSecurityUtils.securityConfig
-
+    print getClass().getName() + ' : ' + config.toString() + '\n'
 
     if(config.ldap.active){
+        print getClass().getName() + ' : ' + 'config.ldap.active' + '\n'
+
         initialDirContextFactory(DefaultSpringSecurityContextSource,
                 config.ldap.context.server){
             userDn = config.ldap.context.managerDn
@@ -102,7 +103,7 @@ beans = {
         cacheName = 'aclCache'
     }
 
-    currentRoleServiceProxy(org.springframework.aop.scope.ScopedProxyFactoryBean) {
+    currentRoleServiceProxy(ScopedProxyFactoryBean) {
         targetBeanName = 'currentRoleService'
         proxyTargetClass = true
     }

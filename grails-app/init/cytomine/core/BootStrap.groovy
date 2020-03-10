@@ -13,7 +13,7 @@ import java.awt.GraphicsEnvironment
 import java.lang.management.ManagementFactory
 
 class BootStrap {
-//    def sequenceService
+    def sequenceService
 //    def grantService
     def termService
 
@@ -44,7 +44,6 @@ class BootStrap {
 //        //Register API Authentifier
         SpringSecurityUtils.clientRegisterFilter( 'apiAuthentificationFilter', SecurityFilterPosition.DIGEST_AUTH_FILTER.order + 1)
         println "Hibernate version is: ${org.hibernate.Version.getVersionString()}"
-
 
         log.info "#############################################################################"
         log.info "#############################################################################"
@@ -103,8 +102,8 @@ class BootStrap {
 
         //TODO sequenceService is deprecated
         // https://stackoverflow.com/questions/41461283/hibernate-sequence-table-is-generated
-//        log.info "init sequences..."
-//        sequenceService.initSequences()
+        log.info "init sequences..."
+        sequenceService.initSequences()
 
         log.info "init trigger..."
         triggerService.initTrigger()
@@ -119,32 +118,33 @@ class BootStrap {
         log.info "init table..."
         tableService.initTable()
 
-//        log.info "init term service..."
+        log.info "init term service..."
         termService.initialize() //term service needs userservice and userservice needs termservice => init manualy at bootstrap
 
         log.info "init retrieve errors hack..."
         retrieveErrorsService.initMethods()
-//
-//        Initialize RabbitMQ server
+
+        log.info "Initialize RabbitMQ server..."
         bootstrapUtilsService.initRabbitMq()
-//
-//        /* Fill data just in test environment*/
-//        log.info "fill with data..."
-//        if (Environment.getCurrent() == Environment.TEST) {
-//            bootstrapDataService.initData()
-//            noSQLCollectionService.cleanActivityDB()
-//            def usersSamples = [
-//                    [username : Infos.ANOTHERLOGIN, firstname : 'Just another', lastname : 'User', email : grailsApplication.config.grails.admin.email, group : [[name : "Cytomine"]], password : grailsApplication.config.grails.adminPassword, color : "#FF0000", roles : ["ROLE_USER", "ROLE_ADMIN","ROLE_SUPER_ADMIN"]]
-//            ]
-//            bootstrapUtilsService.createUsers(usersSamples)
+
+        /* Fill data just in test environment*/
+        log.info "fill with data..."
+        if (Environment.getCurrent() == Environment.TEST) {
+            bootstrapDataService.initData()
+            noSQLCollectionService.cleanActivityDB()
+            def usersSamples = [
+                    [username : Infos.ANOTHERLOGIN, firstname : 'Just another', lastname : 'User', email : grailsApplication.config.grails.admin.email, group : [[name : "Cytomine"]], password : grailsApplication.config.grails.adminPassword, color : "#FF0000", roles : ["ROLE_USER", "ROLE_ADMIN","ROLE_SUPER_ADMIN"]]
+            ]
+            bootstrapUtilsService.createUsers(usersSamples)
 
 //            mockServicesForTests()
-//
-//        }  else if (SecUser.count() == 0) {
-//            //if database is empty, put minimal data
+
+        }  else if (SecUser.count() == 0) {
+            //if database is empty, put minimal data
             bootstrapDataService.initData()
-//        }
-//
+        }
+        log.info 'SecUser.count = ' + SecUser.count().toString()
+
         //set public/private keys for special image server user
         //keys regenerated at each deployment with Docker
         //if keys deleted from external config files for security, keep old keys
@@ -163,24 +163,22 @@ class BootStrap {
                 rabbitMQUser.save(flush : true)
             }
         }
-//
+
         log.info "init change for old version..."
         bootstrapOldVersionService.execChangeForOldVersion()
-//
+
         log.info "create multiple IS and Retrieval..."
         bootstrapUtilsService.createMultipleIS()
         bootstrapUtilsService.createMultipleRetrieval()
-//
-        bootstrapUtilsService.fillProjectConnections();
-        bootstrapUtilsService.fillImageConsultations();
-//
-//        bootstrapUtilsService.initProcessingServerQueues()
-//
+
+//        bootstrapUtilsService.fillProjectConnections();
+//        bootstrapUtilsService.fillImageConsultations();
+
+        bootstrapUtilsService.initProcessingServerQueues()
+
 //        fixPlugins()
-//    }
 
         log.info "Fin du Bootstrap"
-
     }
     //
 //    private void mockServicesForTests(){

@@ -17,6 +17,9 @@ package cytomine.core.security
 */
 
 import cytomine.core.CytomineDomain
+import cytomine.core.Exception.AlreadyExistException
+import cytomine.core.utils.JSONUtils
+
 //import cytomine.core.Exception.AlreadyExistException
 //import cytomine.core.utils.JSONUtils
 import org.apache.commons.lang.builder.HashCodeBuilder
@@ -40,6 +43,7 @@ class SecUserSecRole extends CytomineDomain implements Serializable {
         id generator: "assigned"
         sort "id"
         secRole lazy: false
+
     }
 
 
@@ -65,9 +69,9 @@ class SecUserSecRole extends CytomineDomain implements Serializable {
      * @return Domain with json data filled
      */
     static SecUserSecRole insertDataIntoDomain(def json, def domain = new SecUserSecRole()) {
-//        domain.id = JSONUtils.getJSONAttrLong(json,'id',null)
-//        domain.secUser = JSONUtils.getJSONAttrDomain(json, "user", new SecUser(), true)
-//        domain.secRole = JSONUtils.getJSONAttrDomain(json, "role", new SecRole(), true)
+        domain.id = JSONUtils.getJSONAttrLong(json,'id',null)
+        domain.secUser = JSONUtils.getJSONAttrDomain(json, "user", new SecUser(), true)
+        domain.secRole = JSONUtils.getJSONAttrDomain(json, "role", new SecRole(), true)
         return domain;
     }
 
@@ -103,8 +107,8 @@ class SecUserSecRole extends CytomineDomain implements Serializable {
         SecUserSecRole.withNewSession {
             SecUserSecRole roleAlready = SecUserSecRole.findBySecUserAndSecRole(secUser,secRole)
             if(roleAlready && (roleAlready.id!=id))
-//                throw new AlreadyExistException("Role ${secRole} already exist set for user ${secUser}!")
-                print "Role ${secRole} already exist set for user ${secUser}!"
+                throw new AlreadyExistException("Role ${secRole} already exist set for user ${secUser}!")
+//                print "Role ${secRole} already exist set for user ${secUser}!"
         }
     }
 }

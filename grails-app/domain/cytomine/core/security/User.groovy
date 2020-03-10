@@ -54,17 +54,16 @@ class User extends SecUser {
 //        @RestApiObjectField(apiFieldName = "ghest", description = "(ONLY VISIBLE WHEN DOING GET /api/user/id.format service) True if the user is NOT ADMIN, NOT USER but a simple GHEST ",allowedType = "boolean",useForCreation = false)
 //    ])
     static constraints = {
-        firstname blank: false
-        lastname blank: false
+        firstname blank: false, nullable: true
+        lastname blank: false, nullable: true
         skypeAccount(nullable: true, blank:false)
         sipAccount(nullable: true, blank:false)
-        email(blank: false, email: true)
+        email(blank: false, email: true,nullable: true)
         color(blank: false, nullable: true)
     }
 
     static mapping = {
-        table '`User`'
-        id(generator: 'assigned', unique: true)
+        id  generator: 'assigned', unique: true
         sort "id"
         cache true
     }

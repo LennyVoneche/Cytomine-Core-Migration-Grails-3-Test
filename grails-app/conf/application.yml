@@ -116,6 +116,7 @@ endpoints:
 ---
 hibernate:
     cache:
+        queries: false
         use_second_level_cache: true
         use_query_cache: false
         region:
@@ -211,12 +212,12 @@ cytomine:
     software:
         path:
             softwareImages: /data/softwares/images
+    storage_path: '/data/images' #default path for image locations
+    fast_data_path: '/data/images' #default path for HDF5 files location (for ex: a SSD)
     middleware:
         rabbitmq:
             user: router
             password: router
-#        storage_path="/data/images" //default path for image locations
-#    fast_data_path="/data/images" //default path for HDF5 files location (for ex: a SSD)
     annotation:
         maxNumberOfPoint: 200
     maxRequestSize: 10485760
@@ -228,8 +229,8 @@ grails:
     admin:
         email: info@cytomine.org
     notification:
-        email: ''
-        password: ''
+        email: 'undefined'
+        password: 'undefined'
         smtp:
             host: smtp.gmail.com
             port: 587
