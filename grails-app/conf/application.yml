@@ -119,8 +119,9 @@ hibernate:
         queries: false
         use_second_level_cache: true
         use_query_cache: false
-        region:
-            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+        region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+
+    #            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
     singleSession: true
 
 dataSource:

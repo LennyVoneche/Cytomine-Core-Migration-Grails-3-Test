@@ -144,6 +144,7 @@ class BootStrap {
             bootstrapDataService.initData()
         }
         log.info 'SecUser.count = ' + SecUser.count().toString()
+        bootstrapDataService.initData()
 
         //set public/private keys for special image server user
         //keys regenerated at each deployment with Docker
@@ -171,8 +172,8 @@ class BootStrap {
         bootstrapUtilsService.createMultipleIS()
         bootstrapUtilsService.createMultipleRetrieval()
 
-//        bootstrapUtilsService.fillProjectConnections();
-//        bootstrapUtilsService.fillImageConsultations();
+        bootstrapUtilsService.fillProjectConnections();
+        bootstrapUtilsService.fillImageConsultations();
 
         bootstrapUtilsService.initProcessingServerQueues()
 

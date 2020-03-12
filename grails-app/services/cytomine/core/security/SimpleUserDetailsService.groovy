@@ -37,9 +37,12 @@ class SimpleUserDetailsService extends GormUserDetailsService {
         def auth = SecUserSecRole.findAllBySecUser(user).collect{new SimpleGrantedAuthority(it.secRole.authority)}
         //by default, we remove the role_admin for the current session
         authorities.addAll(auth.findAll{it.authority!="ROLE_ADMIN"})
+        print getClass().getName() + ' SimpleUserDetailsService : ' + '002' + ' ! \n'
 
         return new GrailsUser(user.username, user.password, user.enabled, !user.accountExpired,
                 !user.passwordExpired, !user.accountLocked,
                 authorities, user.id)
+        print getClass().getName() + ' SimpleUserDetailsService : ' + '003' + ' ! \n'
+
     }
 }

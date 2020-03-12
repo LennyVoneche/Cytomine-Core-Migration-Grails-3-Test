@@ -92,6 +92,8 @@ dependencies {
 
     runtime 'org.postgresql:postgresql:9.4-1206-jdbc4'
     compile 'org.grails.plugins:database-migration:3.1.0.RC1'
+//    compile group: 'org.grails', name: 'grails-datastore-gorm', version: '7.0.3.RELEASE'
+//Thanks for using https://jar-download.com
 
 //    compile group: 'org.apache.lucene', name: 'lucene-core', version: '8.4.1'
 //    compile 'org.liquibase:liquibase-core:3.5.5'

@@ -33,37 +33,37 @@ grails.plugin.springsecurity.fii.rejectPublicInvocations = false
 grails.plugin.springsecurity.useSwitchUserFilter = true
 grails.plugin.springsecurity.securityConfigType = "InterceptUrlMap"
 
-//grails.plugin.springsecurity.interceptUrlMap = [
-//		[pattern: '/admin/**',               		access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
-//		[pattern: '/admincyto/**',          		access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
-//		[pattern: '/monitoring/**',          		access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
-//		[pattern: '/j_spring_security_switch_user', access:['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
-//		[pattern: '/securityInfo/**',      			access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
-//		[pattern: '/api/**',       					access: ['IS_AUTHENTICATED_REMEMBERED']],
-//		[pattern: '/lib/**',     					access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
-//		[pattern: '/css/**',       					access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
-//		[pattern: '/images/**',      				access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
-//		[pattern: '/*',   							access: ['permitAll']],
-//		[pattern: '/login/**',						access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
-//		[pattern: '/logout/**', 					access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
-//		[pattern: '/status/**', 					access: ['IS_AUTHENTICATED_ANONYMOUSLY']]
-//]
-
 grails.plugin.springsecurity.interceptUrlMap = [
-		[pattern: '/admin/**',               		access: ['permitAll']],
-		[pattern: '/admincyto/**',          		access: ['permitAll']],
-		[pattern: '/monitoring/**',          		access: ['permitAll']],
-		[pattern: '/j_spring_security_switch_user', access: ['permitAll']],
-		[pattern: '/securityInfo/**',      			access: ['permitAll']],
-		[pattern: '/api/**',       					access: ['permitAll']],
-		[pattern: '/lib/**',     					access: ['permitAll']],
-		[pattern: '/css/**',       					access: ['permitAll']],
-		[pattern: '/images/**',      				access: ['permitAll']],
+		[pattern: '/admin/**',               		access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
+		[pattern: '/admincyto/**',          		access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
+		[pattern: '/monitoring/**',          		access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
+		[pattern: '/j_spring_security_switch_user', access:['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
+		[pattern: '/securityInfo/**',      			access: ['ROLE_ADMIN','ROLE_SUPER_ADMIN']],
+		[pattern: '/api/**',       					access: ['IS_AUTHENTICATED_REMEMBERED']],
+		[pattern: '/lib/**',     					access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+		[pattern: '/css/**',       					access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+		[pattern: '/images/**',      				access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 		[pattern: '/*',   							access: ['permitAll']],
-		[pattern: '/login/**',						access: ['permitAll']],
-		[pattern: '/logout/**', 					access: ['permitAll']],
-		[pattern: '/status/**', 					access: ['permitAll']]
+		[pattern: '/login/**',						access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+		[pattern: '/logout/**', 					access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+		[pattern: '/status/**', 					access: ['IS_AUTHENTICATED_ANONYMOUSLY']]
 ]
+
+//grails.plugin.springsecurity.interceptUrlMap = [
+//		[pattern: '/admin/**',               		access: ['permitAll']],
+//		[pattern: '/admincyto/**',          		access: ['permitAll']],
+//		[pattern: '/monitoring/**',          		access: ['permitAll']],
+//		[pattern: '/j_spring_security_switch_user', access: ['permitAll']],
+//		[pattern: '/securityInfo/**',      			access: ['permitAll']],
+//		[pattern: '/api/**',       					access: ['permitAll']],
+//		[pattern: '/lib/**',     					access: ['permitAll']],
+//		[pattern: '/css/**',       					access: ['permitAll']],
+//		[pattern: '/images/**',      				access: ['permitAll']],
+//		[pattern: '/*',   							access: ['permitAll']],
+//		[pattern: '/login/**',						access: ['permitAll']],
+//		[pattern: '/logout/**', 					access: ['permitAll']],
+//		[pattern: '/status/**', 					access: ['permitAll']]
+//]
 
 
 /******************************************************************************
