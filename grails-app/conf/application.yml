@@ -253,6 +253,7 @@ grails:
     plugin:
         springsecurity:
             useBasicAuth: false
+#            useBasicAuth: true
     ressources:
         adhoc:
             patterns:

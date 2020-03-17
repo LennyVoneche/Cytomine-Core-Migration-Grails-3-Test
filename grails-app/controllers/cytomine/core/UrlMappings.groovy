@@ -1,5 +1,4 @@
-//package cytomine.core
-//
+package cytomine.core
 //class UrlMappings {
 //
 //    static mappings = {
@@ -29,7 +28,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-//
+
+
 import cytomine.core.Exception.ForbiddenException
 import cytomine.core.Exception.ObjectNotFoundException
 import org.springframework.security.access.AccessDeniedException
@@ -54,18 +54,18 @@ class UrlMappings {
 
         /* Home */
         "/"(view:"/index")
-
-        /* Errors */
-//        "/500" (view:'/error')
-        //        "/403" (view:'/forbidden')
-        "403"(controller: "errors", action: "error403")
-        //"404.$format"(controller: "errors", action: "error404")
-        "500"(controller: "errors", action: "error500")
-        "500"(controller: "errors", action: "error403", exception: AccessDeniedException)
-        "500"(controller: "errors", action: "error403", exception: NotFoundException)
-        "500"(controller: "errors", action: "error403", exception: ForbiddenException)
-        "500.$format"(controller: "errors", action: "error404", exception: ObjectNotFoundException)
-
+//
+//        /* Errors */
+////        "/500" (view:'/error')
+//        //        "/403" (view:'/forbidden')
+//        "403"(controller: "errors", action: "error403")
+//        //"404.$format"(controller: "errors", action: "error404")
+//        "500"(controller: "errors", action: "error500")
+//        "500"(controller: "errors", action: "error403", exception: AccessDeniedException)
+//        "500"(controller: "errors", action: "error403", exception: NotFoundException)
+//        "500"(controller: "errors", action: "error403", exception: ForbiddenException)
+//        "500.$format"(controller: "errors", action: "error404", exception: ObjectNotFoundException)
+//
         "/processing/detect/$image/$x/$y.$format"(controller:"processing") {
             action = [GET : "detect"]
         }
